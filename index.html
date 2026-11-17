@@ -800,6 +800,7 @@ const questions = [
 
 let currentCase = null;
 let questionsAsked = 0;
+let score = 100;
 
 
 // START A RANDOM CASE
@@ -810,6 +811,7 @@ function StartGame() {
   currentCase = cases[randomIndex];
 
   questionsAsked = 0;
+  score = 100;
 
   document.getElementById("WelcomeScreen").hidden = true;
   document.getElementById("GameScreen").hidden = false;
@@ -821,7 +823,7 @@ function StartGame() {
   fillList("CaseSymptoms", currentCase.symptoms);
   fillList("CaseLabs", currentCase.labs);
 
-  document.getElementById("QuestionCount").textContent = "Questions asked: 0";
+  document.getElementById("QuestionCount").textContent = "Questions asked: 0 | Score 100 points";
   document.getElementById("QuestionAnswer").hidden = true;
   document.getElementById("FinalResult").hidden = true;
   document.getElementById("CaseExplanation").hidden = true;
@@ -982,6 +984,7 @@ function AskQuestion() {
   const answer = hiddenPathogen.traits[question.trait] ? "YES" : "NO";
 
   questionsAsked += 1;
+  score = Math.max(0. score - 5);
 
   document.getElementById("QuestionAnswer").textContent =
     "Answer: " + answer + ".";
@@ -989,7 +992,7 @@ function AskQuestion() {
   document.getElementById("QuestionAnswer").hidden = false;
 
   document.getElementById("QuestionCount").textContent =
-    "Questions asked: " + questionsAsked;
+    "Questions asked: " + questionsAsked + " | Score: " + score + " points';
 
 }
 
@@ -1016,28 +1019,30 @@ function SubmitDiagnosis() {
       guess === "Escherichia coli"
     );
 
-  if (correct) {
+ if (correct) {
 
-    result.innerHTML =
-      "<h3>Correct diagnosis!</h3>" +
-      "<p>The pathogen was <strong>" +
-      escapeHTML(currentCase.answer) +
-      "</strong>.</p>" +
-      "<p>You asked " + questionsAsked + " question(s).</p>";
+  result.innerHTML =
+    "<h3>🏆 Correct diagnosis! 🏆</h3>" +
+    "<p>The pathogen was <strong>" +
+    escapeHTML(currentCase.answer) +
+    "</strong>.</p>" +
+    "<p>You asked " + questionsAsked + " question(s).</p>" +
+    "<h2>🏆 Final score: " + score + " points!</h2>";
 
-  } else {
+} else {
 
-    result.innerHTML =
-      "<h3>Not quite — case solved!</h3>" +
-      "<p>The correct pathogen was <strong>" +
-      escapeHTML(currentCase.answer) +
-      "</strong>.</p>" +
-      "<p>You selected <strong>" +
-      escapeHTML(guess) +
-      "</strong> and asked " +
-      questionsAsked + " question(s).</p>";
+  result.innerHTML =
+    "<h3>Not quite — case solved!</h3>" +
+    "<p>The correct pathogen was <strong>" +
+    escapeHTML(currentCase.answer) +
+    "</strong>.</p>" +
+    "<p>You selected <strong>" +
+    escapeHTML(guess) +
+    "</strong> and asked " +
+    questionsAsked + " question(s).</p>" +
+    "<h2>Final score: " + score + " points</h2>";
 
-  }
+}
 
   result.hidden = false;
   displayCaseExplanation();
