@@ -997,7 +997,6 @@ function AskQuestion() {
 }
 
 
-
 // SUBMIT THE FINAL DIAGNOSIS
 
 function SubmitDiagnosis() {
@@ -1020,6 +1019,8 @@ function SubmitDiagnosis() {
       guess === "Escherichia coli"
     );
 
+  result.hidden = false;
+
   if (correct) {
 
     result.innerHTML =
@@ -1030,27 +1031,22 @@ function SubmitDiagnosis() {
       "<p>You asked " + questionsAsked + " question(s).</p>" +
       "<h2>🏆 Final score: " + score + " points!</h2>";
 
-    // Show the case explanation only after a correct answer
-    document.getElementById("CaseExplanation").style.display = "block";
+    // Reveal the explanation only for a correct answer
+    displayCaseExplanation();
 
   } else {
 
     score = Math.max(0, score - 10);
-    
-    result.innerHTML =
-      "<h3>Not quite, Detective! Re-examine the case and try again!</h3>";
 
-    // Hide the case explanation after an incorrect answer
-    document.getElementById("CaseExplanation").style.display = "none";
+    result.innerHTML =
+      "<h3>Not quite, Detective! Re-examine the case and try again!</h3>" +
+      "<p>You have " + score + " points remaining.</p>";
+
+    // Keep the explanation hidden
+    document.getElementById("CaseExplanation").hidden = true;
   }
 }
 
-
-
-  result.hidden = false;
-  displayCaseExplanation();
-
-}
 
 
 // DISPLAY THE TEACHING EXPLANATION ONLY AFTER DIAGNOSIS SUBMISSION
