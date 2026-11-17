@@ -19,14 +19,14 @@ body {
   text-align: center;
 }
 
-  button, select {
-    cursor: pointer;
-    border:0;
-    border-radius:9px;
-    padding: 11px 15px;
-    font-weight: bold;
-  }
-  
+button {
+  cursor: pointer;
+  border: 0;
+  border-radius: 9px;
+  padding: 11px 15px;
+  font-weight: bold;
+}
+
 .primary {
   background: #e8c86d;
   color: #142d35;
@@ -34,53 +34,301 @@ body {
   padding: 16px 35px;
 }
 
-.primary:hover { 
-  background: #f6dc91; 
+.primary:hover {
+  background: #f6dc91;
+}
+
+.secondary {
+  background: #42616a;
+  color: white;
+  margin: 8px;
 }
 
 .panel {
   background: #1b3943;
   border: 1px solid #42616a;
   border-radius: 13px;
-  padding: 18px;
+  padding: 22px;
   margin: 18px auto;
   max-width: 950px;
   width: 94%;
 }
-  </style>
+
+.case-section {
+  text-align: left;
+  margin-top: 25px;
+  line-height: 1.7;
+}
+
+.case-section h3 {
+  color: #e8c86d;
+  border-bottom: 1px solid #42616a;
+  padding-bottom: 8px;
+}
+
+.case-section ul {
+  padding-left: 25px;
+}
+
+.case-number {
+  color: #e8c86d;
+  font-weight: bold;
+}
+
+#GameScreen {
+  padding-bottom: 30px;
+}
+
+[hidden] {
+  display: none !important;
+}
+</style>
 </head>
-  
-  <body>
 
-    <header>
-      <h1>Pathogen Detective</h1>
-      <p>16 Suspects. One culprit. Solve the mystery.</p>
-    </header>
+<body>
 
-    <div class="panel" id="WelcomeScreen">
-      <h2>Welcome, Detective!</h2>
-      <p>Are you ready for your first case?</p>
-      
-      <button class="primary" onclick="StartGame()">
-        Start Game
-      </button>
-    </div>
+<header>
+  <h1>Pathogen Detective</h1>
+  <p>16 Suspects. One Culprit. Solve the Mystery.</p>
+</header>
 
-    <div class="panel" id="GameScreen"hidden>
-    <h2>Your Investigation begins!</h2>
-      <p>Your clinical case will appear here.</p>
-      <p>Next, we'll add the 16 pathogen cards and questions.</p>
-    </div>
+<!-- WELCOME SCREEN -->
 
-    <script>
-      function StartGame() {
-      document.getElementById("WelcomeScreen").hidden = true;
-      document.getElementById("GameScreen").hidden = false;
-      }
+<div class="panel" id="WelcomeScreen">
+  <h2>Welcome, Detective!</h2>
+  <p>Are you ready to investigate your first clinical case?</p>
 
-    </script>
-  </body>
+  <button class="primary" onclick="StartGame()">
+    Start Game
+  </button>
+</div>
+
+<!-- GAME SCREEN -->
+
+<div class="panel" id="GameScreen" hidden>
+
+  <p class="case-number" id="CaseNumber">CASE FILE</p>
+
+  <h2 id="CaseTitle">Your Clinical Case</h2>
+
+  <div class="case-section">
+    <h3>Patient Background</h3>
+    <p id="CaseBackground"></p>
+  </div>
+
+  <div class="case-section">
+    <h3>Symptoms and Clinical Findings</h3>
+    <ul id="CaseSymptoms"></ul>
+  </div>
+
+  <div class="case-section">
+    <h3>Laboratory Results</h3>
+    <ul id="CaseLabs"></ul>
+  </div>
+
+  <div class="case-section">
+    <h3>Your Investigation</h3>
+    <p>
+      Use the clinical information to investigate the case.
+      Ask questions, examine the pathogen board and eliminate
+      the suspects you believe are incorrect.
+    </p>
+  </div>
+
+  <button class="secondary" onclick="StartGame()">
+    Start Another Case
+  </button>
+
+</div>
+
+<script>
+
+// FIVE CLINICAL CASES
+
+const cases = [
+
+  {
+    answer: "Bacillus anthracis",
+
+    title: "The Farmer's Skin Lesion Mystery",
+
+    background:
+      "A 28-year-old male farmer attends the emergency department with a skin lesion on his right forearm that has progressively worsened over five days. It initially appeared as a small itchy bump before developing into a fluid-filled blister. This eventually ruptured and formed a painless ulcer with a dark central area. He regularly handles animal hides and wool as part of his occupation. Several animals on a nearby farm have recently become unwell.",
+
+    symptoms: [
+      "An itchy skin bump that developed into a blister",
+      "A painless ulcer with a dark central area",
+      "Swelling of the surrounding skin",
+      "Mild fever",
+      "Body aches",
+      "General fatigue",
+      "Swollen regional lymph nodes"
+    ],
+
+    labs: [
+      "White blood cell count: 13.2 × 10⁹/L",
+      "Neutrophils: 10.1 × 10⁹/L",
+      "Haemoglobin: 145 g/L",
+      "Platelets: 280 × 10⁹/L",
+      "Creatinine: 86 µmol/L"
+    ]
+  },
+
+  {
+    answer: "Escherichia coli (STEC)",
+
+    title: "The Barbecue Food Poisoning Mystery",
+
+    background:
+      "A 30-year-old male, Max, attends the emergency department with a two-day history of severe abdominal cramps, frequent diarrhoea and nausea. Four days before his symptoms began, he attended a neighbourhood barbecue where he ate a cheeseburger and several chicken skewers. Several other people attended the event, but nobody else has reported becoming ill.",
+
+    symptoms: [
+      "Severe abdominal cramps",
+      "Frequent diarrhoea containing blood",
+      "Nausea",
+      "Reduced appetite",
+      "Fatigue and general weakness",
+      "Mild dehydration"
+    ],
+
+    labs: [
+      "Temperature: 37.8°C",
+      "Blood pressure: 108/70 mmHg",
+      "Lower abdominal tenderness",
+      "Stool sample sent for bacterial culture",
+      "Shiga toxin testing requested",
+      "Molecular testing for gastrointestinal pathogens requested"
+    ]
+  },
+
+  {
+    answer: "Influenza A",
+
+    title: "The Winter Flu Mystery",
+
+    background:
+      "Janice, a university student at the University of Strathclyde, attends a health clinic during the winter months. She has been busy with university midterms and has recently started feeling unwell. Janice has a history of asthma and explains that walking to campus has become more challenging due to her persistent cough and respiratory symptoms.",
+
+    symptoms: [
+      "Persistent sore throat",
+      "Runny nose",
+      "Dry, persistent cough",
+      "Red and inflamed throat",
+      "Increased difficulty with physical activity",
+      "General fatigue"
+    ],
+
+    labs: [
+      "A respiratory sample is collected",
+      "Nasopharyngeal swab sent for molecular testing",
+      "RT-PCR requested to investigate possible viral infection"
+    ]
+  },
+
+  {
+    answer: "Plasmodium falciparum",
+
+    title: "The Tropical Fever Mystery",
+
+    background:
+      "Steven has recently returned home from a two-week volunteering trip to Ghana, where he was helping introduce new teaching strategies in local schools. He returned three days ago and has since visited his doctor after developing a high fever, excessive sweating, extreme fatigue and muscle and joint pain. He reports that his accommodation was sanitary and that his food and water came from clean sources.",
+
+    symptoms: [
+      "High fever of 39°C",
+      "Excessive sweating",
+      "Muscle and joint aches",
+      "Frequent headaches",
+      "Severe fatigue and general weakness",
+      "Vomiting and diarrhoea"
+    ],
+
+    labs: [
+      "Ring-stage trophozoites identified within red blood cells using microscopy",
+      "PCR testing detects parasite DNA",
+      "Red blood cells show changes associated with parasitic infection",
+      "Reduced platelet count (thrombocytopenia)"
+    ]
+  },
+
+  {
+    answer: "Mycobacterium tuberculosis",
+
+    title: "The Persistent Cough Mystery",
+
+    background:
+      "A 25-year-old male attends his GP after experiencing a persistent cough for approximately six weeks. The cough initially started as dry but has gradually become productive, with occasional blood-streaked sputum. He also reports night sweats, unexplained weight loss, fatigue and a reduced appetite. He mentions having spent time with an acquaintance who had a prolonged respiratory illness several months earlier.",
+
+    symptoms: [
+      "Persistent cough lasting approximately six weeks",
+      "Occasional blood-streaked sputum",
+      "Night sweats",
+      "Unexplained weight loss",
+      "Fatigue and general weakness",
+      "Reduced appetite",
+      "Occasional chest discomfort",
+      "Fever"
+    ],
+
+    labs: [
+      "Raised white blood cell count",
+      "Elevated C-reactive protein (CRP)",
+      "Elevated erythrocyte sedimentation rate (ESR)",
+      "Chest X-ray shows an opacity in the right upper lung",
+      "A possible small cavitary lesion is identified",
+      "Sputum samples sent for further microbiological testing"
+    ]
+  }
+
+];
+
+
+// RANDOM CASE SELECTION
+
+function StartGame() {
+
+  // Select a random case from the five available
+  const randomIndex = Math.floor(Math.random() * cases.length);
+
+  const selectedCase = cases[randomIndex];
+
+  // Hide welcome screen and show game screen
+  document.getElementById("WelcomeScreen").hidden = true;
+  document.getElementById("GameScreen").hidden = false;
+
+  // Display case information
+  document.getElementById("CaseNumber").textContent = "CASE FILE";
+  document.getElementById("CaseTitle").textContent = selectedCase.title;
+  document.getElementById("CaseBackground").textContent = selectedCase.background;
+
+  // Display symptoms
+  const symptomsList = document.getElementById("CaseSymptoms");
+  symptomsList.innerHTML = "";
+
+  selectedCase.symptoms.forEach(function(symptom) {
+    const item = document.createElement("li");
+    item.textContent = symptom;
+    symptomsList.appendChild(item);
+  });
+
+  // Display laboratory results
+  const labsList = document.getElementById("CaseLabs");
+  labsList.innerHTML = "";
+
+  selectedCase.labs.forEach(function(lab) {
+    const item = document.createElement("li");
+    item.textContent = lab;
+    labsList.appendChild(item);
+  });
+
+  // Keep the selected case available for later game features
+  currentCase = selectedCase;
+}
+
+
+// Store the selected case for the investigation
+let currentCase = null;
+
+</script>
+
+</body>
 </html>
-
-
-                          
