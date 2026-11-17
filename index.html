@@ -984,7 +984,7 @@ function AskQuestion() {
   const answer = hiddenPathogen.traits[question.trait] ? "YES" : "NO";
 
   questionsAsked += 1;
-  score = Math.max(0. score - 5);
+  score = Math.max(0, score - 5);
 
   document.getElementById("QuestionAnswer").textContent =
     "Answer: " + answer + ".";
@@ -992,7 +992,7 @@ function AskQuestion() {
   document.getElementById("QuestionAnswer").hidden = false;
 
   document.getElementById("QuestionCount").textContent =
-    "Questions asked: " + questionsAsked + " | Score: " + score + " points';
+    "Questions asked: " + questionsAsked + " | Score: " + score + " points";
 
 }
 
