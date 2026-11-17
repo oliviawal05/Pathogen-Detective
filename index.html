@@ -7,9 +7,7 @@
 <title>Pathogen Detective</title>
 
 <style>
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
   margin: 0;
@@ -19,12 +17,15 @@ body {
   text-align: center;
 }
 
-button {
+header { padding: 12px 16px 4px; }
+
+button, select {
   cursor: pointer;
   border: 0;
   border-radius: 9px;
   padding: 11px 15px;
   font-weight: bold;
+  font-size: 15px;
 }
 
 .primary {
@@ -34,9 +35,7 @@ button {
   padding: 16px 35px;
 }
 
-.primary:hover {
-  background: #f6dc91;
-}
+.primary:hover { background: #f6dc91; }
 
 .secondary {
   background: #42616a;
@@ -50,7 +49,7 @@ button {
   border-radius: 13px;
   padding: 22px;
   margin: 18px auto;
-  max-width: 950px;
+  max-width: 1100px;
   width: 94%;
 }
 
@@ -66,21 +65,128 @@ button {
   padding-bottom: 8px;
 }
 
-.case-section ul {
-  padding-left: 25px;
-}
+.case-section ul { padding-left: 25px; }
 
 .case-number {
   color: #e8c86d;
   font-weight: bold;
 }
 
-#GameScreen {
-  padding-bottom: 30px;
+.small-note {
+  color: #c3d2d2;
+  font-size: 0.92rem;
+  line-height: 1.5;
 }
 
-[hidden] {
-  display: none !important;
+#GameScreen { padding-bottom: 30px; }
+
+[hidden] { display: none !important; }
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.pathogen-card {
+  position: relative;
+  background: #254650;
+  color: #f3f7f5;
+  border: 2px solid #55737b;
+  border-radius: 12px;
+  padding: 10px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-height: 190px;
+  transition: opacity 0.15s, border-color 0.15s;
+}
+
+.pathogen-card:hover { border-color: #e8c86d; }
+
+.pathogen-card img {
+  width: 100%;
+  height: 125px;
+  object-fit: contain;
+  background: #f3f7f5;
+  border-radius: 7px;
+}
+
+.pathogen-card .pathogen-name {
+  font-size: 0.92rem;
+  line-height: 1.25;
+}
+
+.pathogen-card.eliminated {
+  opacity: 0.42;
+  filter: grayscale(1);
+}
+
+.pathogen-card.eliminated::after {
+  content: "ELIMINATED";
+  position: absolute;
+  top: 42%;
+  left: 5%;
+  right: 5%;
+  padding: 8px 3px;
+  background: #102630e8;
+  color: #f6dc91;
+  font-weight: bold;
+  letter-spacing: 1px;
+  border: 1px solid #e8c86d;
+  border-radius: 6px;
+}
+
+.investigation-controls {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+select {
+  background: #f3f7f5;
+  color: #142d35;
+  max-width: 100%;
+}
+
+#QuestionAnswer, #FinalResult {
+  margin: 16px auto 0;
+  padding: 14px;
+  border-radius: 9px;
+  background: #102630;
+  line-height: 1.5;
+}
+
+#QuestionAnswer { max-width: 750px; }
+
+#FinalResult {
+  max-width: 800px;
+  border: 1px solid #e8c86d;
+}
+
+@media (max-width: 700px) {
+  .board {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+  }
+
+  .pathogen-card {
+    min-height: 165px;
+    padding: 8px;
+  }
+
+  .pathogen-card img { height: 105px; }
+  .panel { padding: 15px; }
+}
+
+@media (min-width: 701px) and (max-width: 950px) {
+  .board { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 </style>
 </head>
@@ -97,10 +203,7 @@ button {
 <div class="panel" id="WelcomeScreen">
   <h2>Welcome, Detective!</h2>
   <p>Are you ready to investigate your first clinical case?</p>
-
-  <button class="primary" onclick="StartGame()">
-    Start Game
-  </button>
+  <button class="primary" onclick="StartGame()">Start Game</button>
 </div>
 
 <!-- GAME SCREEN -->
@@ -108,7 +211,6 @@ button {
 <div class="panel" id="GameScreen" hidden>
 
   <p class="case-number" id="CaseNumber">CASE FILE</p>
-
   <h2 id="CaseTitle">Your Clinical Case</h2>
 
   <div class="case-section">
@@ -129,16 +231,66 @@ button {
   <div class="case-section">
     <h3>Your Investigation</h3>
     <p>
-      Use the clinical information to investigate the case.
-      Ask questions, examine the pathogen board and eliminate
-      the suspects you believe are incorrect.
+      Use the clinical information and the question tool to investigate.
+      You decide which suspects to eliminate.
     </p>
   </div>
 
-  <button class="secondary" onclick="StartGame()">
-    Start Another Case
-  </button>
+  <div class="case-section">
+    <h3>Ask a yes/no question</h3>
+    <p class="small-note">
+      Choose a question, then ask the game. The answer will not remove
+      any cards for you.
+    </p>
 
+    <div class="investigation-controls">
+      <select id="QuestionSelect" aria-label="Choose an investigation question">
+        <option value="">Choose a question...</option>
+      </select>
+
+      <button class="primary" onclick="AskQuestion()">Ask question</button>
+    </div>
+
+    <div id="QuestionAnswer" aria-live="polite" hidden></div>
+    <p class="small-note" id="QuestionCount">Questions asked: 0</p>
+  </div>
+
+  <div class="case-section">
+    <h3>Pathogen suspect board</h3>
+    <p class="small-note">
+      Click a card to eliminate it. Click it again to restore it.
+      This is a manual tool only: the game will not judge your eliminations.
+    </p>
+
+    <div class="board" id="PathogenBoard"></div>
+
+    <div class="investigation-controls">
+      <button class="secondary" onclick="RestoreAllCards()">
+        Restore all cards
+      </button>
+    </div>
+  </div>
+
+  <div class="case-section">
+    <h3>Submit your final diagnosis</h3>
+    <p>
+      When you are ready, select the pathogen you think caused the patient's illness.
+    </p>
+
+    <div class="investigation-controls">
+      <select id="DiagnosisSelect" aria-label="Choose your final diagnosis">
+        <option value="">Choose your diagnosis...</option>
+      </select>
+
+      <button class="primary" onclick="SubmitDiagnosis()">
+        Submit diagnosis
+      </button>
+    </div>
+
+    <div id="FinalResult" aria-live="polite" hidden></div>
+  </div>
+
+  <button class="secondary" onclick="StartGame()">Start another case</button>
 </div>
 
 <script>
@@ -149,7 +301,6 @@ const cases = [
 
   {
     answer: "Bacillus anthracis",
-
     title: "The Farmer's Skin Lesion Mystery",
 
     background:
@@ -176,7 +327,6 @@ const cases = [
 
   {
     answer: "Escherichia coli (STEC)",
-
     title: "The Barbecue Food Poisoning Mystery",
 
     background:
@@ -203,7 +353,6 @@ const cases = [
 
   {
     answer: "Influenza A",
-
     title: "The Winter Flu Mystery",
 
     background:
@@ -227,7 +376,6 @@ const cases = [
 
   {
     answer: "Plasmodium falciparum",
-
     title: "The Tropical Fever Mystery",
 
     background:
@@ -252,7 +400,6 @@ const cases = [
 
   {
     answer: "Mycobacterium tuberculosis",
-
     title: "The Persistent Cough Mystery",
 
     background:
@@ -282,51 +429,507 @@ const cases = [
 ];
 
 
-// RANDOM CASE SELECTION
+// 16 PATHOGEN CARDS AND THEIR IMAGE FILES
+
+const pathogens = [
+
+  {
+    name: "Bacillus anthracis",
+    image: "Bacillus Anthracis.png",
+    traits: {
+      bacterium: true,
+      gramPositive: true,
+      spore: true,
+      acidFast: false,
+      fungus: false,
+      virus: false,
+      parasite: false,
+      envelope: false,
+      vector: false,
+      redCell: false,
+      respiratory: false,
+      foodborne: true
+    }
+  },
+
+  {
+    name: "Candida albicans",
+    image: "Candida Albicans.png",
+    traits: {
+      bacterium: false, gramPositive: false, spore: false,
+      acidFast: false, fungus: true, virus: false,
+      parasite: false, envelope: false, vector: false,
+      redCell: false, respiratory: false, foodborne: false
+    }
+  },
+
+  {
+    name: "Escherichia coli",
+    image: "Escherichia coli.png",
+    traits: {
+      bacterium: true, gramPositive: false, spore: false,
+      acidFast: false, fungus: false, virus: false,
+      parasite: false, envelope: false, vector: false,
+      redCell: false, respiratory: false, foodborne: true
+    }
+  },
+
+  {
+    name: "HIV",
+    image: "Human Immunodeficiency virus.png",
+    traits: {
+      bacterium: false, gramPositive: false, spore: false,
+      acidFast: false, fungus: false, virus: true,
+      parasite: false, envelope: true, vector: false,
+      redCell: false, respiratory: false, foodborne: false
+    }
+  },
+
+  {
+    name: "Influenza A",
+    image: "Influenza A.png",
+    traits: {
+      bacterium: false, gramPositive: false, spore: false,
+      acidFast: false, fungus: false, virus: true,
+      parasite: false, envelope: true, vector: false,
+      redCell: false, respiratory: true, foodborne: false
+    }
+  },
+
+  {
+    name: "Listeria monocytogenes",
+    image: "Listeria Monocytogenes.png",
+    traits: {
+      bacterium: true, gramPositive: true, spore: false,
+      acidFast: false, fungus: false, virus: false,
+      parasite: false, envelope: false, vector: false,
+      redCell: false, respiratory: false, foodborne: true
+    }
+  },
+
+  {
+    name: "Measles virus",
+    image: "Measles Virus.png",
+    traits: {
+      bacterium: false, gramPositive: false, spore: false,
+      acidFast: false, fungus: false, virus: true,
+      parasite: false, envelope: true, vector: false,
+      redCell: false, respiratory: true, foodborne: false
+    }
+  },
+
+  {
+    name: "Mycobacterium tuberculosis",
+    image: "Mycobacterium Tuberculosis.png",
+    traits: {
+      bacterium: true, gramPositive: false, spore: false,
+      acidFast: true, fungus: false, virus: false,
+      parasite: false, envelope: false, vector: false,
+      redCell: false, respiratory: true, foodborne: false
+    }
+  },
+
+  {
+    name: "Neisseria gonorrhoeae",
+    image: "Neisseria Gonorrhoea.png",
+    traits: {
+      bacterium: true, gramPositive: false, spore: false,
+      acidFast: false, fungus: false, virus: false,
+      parasite: false, envelope: false, vector: false,
+      redCell: false, respiratory: false, foodborne: false
+    }
+  },
+
+  {
+    name: "Neisseria meningitidis",
+    image: "Neisseria Meningitis.png",
+    traits: {
+      bacterium: true, gramPositive: false, spore: false,
+      acidFast: false, fungus: false, virus: false,
+      parasite: false, envelope: false, vector: false,
+      redCell: false, respiratory: true, foodborne: false
+    }
+  },
+
+  {
+    name: "Plasmodium falciparum",
+    image: "Plasmodium Falciparum.png",
+    traits: {
+      bacterium: false, gramPositive: false, spore: false,
+      acidFast: false, fungus: false, virus: false,
+      parasite: true, envelope: false, vector: true,
+      redCell: true, respiratory: false, foodborne: false
+    }
+  },
+
+  {
+    name: "Pneumocystis jirovecii",
+    image: "Pneumocytosis Jiroveci.png",
+    traits: {
+      bacterium: false, gramPositive: false, spore: false,
+      acidFast: false, fungus: true, virus: false,
+      parasite: false, envelope: false, vector: false,
+      redCell: false, respiratory: true, foodborne: false
+    }
+  },
+
+  {
+    name: "SARS-CoV-2",
+    image: "SARS-CoV-2.png",
+    traits: {
+      bacterium: false, gramPositive: false, spore: false,
+      acidFast: false, fungus: false, virus: true,
+      parasite: false, envelope: true, vector: false,
+      redCell: false, respiratory: true, foodborne: false
+    }
+  },
+
+  {
+    name: "Salmonella enterica",
+    image: "Salmonella Enterica.png",
+    traits: {
+      bacterium: true, gramPositive: false, spore: false,
+      acidFast: false, fungus: false, virus: false,
+      parasite: false, envelope: false, vector: false,
+      redCell: false, respiratory: false, foodborne: true
+    }
+  },
+
+  {
+    name: "Staphylococcus aureus",
+    image: "Staphylococcus Aureaus.png",
+    traits: {
+      bacterium: true, gramPositive: true, spore: false,
+      acidFast: false, fungus: false, virus: false,
+      parasite: false, envelope: false, vector: false,
+      redCell: false, respiratory: false, foodborne: false
+    }
+  },
+
+  {
+    name: "Vibrio cholerae",
+    image: "Vibrio Cholorae.png",
+    traits: {
+      bacterium: true, gramPositive: false, spore: false,
+      acidFast: false, fungus: false, virus: false,
+      parasite: false, envelope: false, vector: false,
+      redCell: false, respiratory: false, foodborne: true
+    }
+  }
+
+];
+
+
+// YES/NO QUESTIONS
+
+const questions = [
+  { text: "Is it a bacterium?", trait: "bacterium" },
+  { text: "Is it a virus?", trait: "virus" },
+  { text: "Is it a fungus?", trait: "fungus" },
+  { text: "Is it a parasite?", trait: "parasite" },
+  { text: "Is it Gram-positive?", trait: "gramPositive" },
+  { text: "Is it an acid-fast organism?", trait: "acidFast" },
+  { text: "Does it form bacterial endospores?", trait: "spore" },
+  { text: "Is it an enveloped virus?", trait: "envelope" },
+  { text: "Is it transmitted by an insect vector?", trait: "vector" },
+  { text: "Does it infect red blood cells?", trait: "redCell" },
+  { text: "Is respiratory transmission important?", trait: "respiratory" },
+  { text: "Can it be transmitted through contaminated food?", trait: "foodborne" }
+];
+
+
+// STORE THE CURRENT CASE AND QUESTION COUNT
+
+let currentCase = null;
+let questionsAsked = 0;
+
+
+// START A RANDOM CASE
 
 function StartGame() {
 
-  // Select a random case from the five available
   const randomIndex = Math.floor(Math.random() * cases.length);
+  currentCase = cases[randomIndex];
 
-  const selectedCase = cases[randomIndex];
+  questionsAsked = 0;
 
-  // Hide welcome screen and show game screen
   document.getElementById("WelcomeScreen").hidden = true;
   document.getElementById("GameScreen").hidden = false;
 
-  // Display case information
   document.getElementById("CaseNumber").textContent = "CASE FILE";
-  document.getElementById("CaseTitle").textContent = selectedCase.title;
-  document.getElementById("CaseBackground").textContent = selectedCase.background;
+  document.getElementById("CaseTitle").textContent = currentCase.title;
+  document.getElementById("CaseBackground").textContent = currentCase.background;
 
-  // Display symptoms
-  const symptomsList = document.getElementById("CaseSymptoms");
-  symptomsList.innerHTML = "";
+  fillList("CaseSymptoms", currentCase.symptoms);
+  fillList("CaseLabs", currentCase.labs);
 
-  selectedCase.symptoms.forEach(function(symptom) {
-    const item = document.createElement("li");
-    item.textContent = symptom;
-    symptomsList.appendChild(item);
-  });
+  document.getElementById("QuestionCount").textContent = "Questions asked: 0";
+  document.getElementById("QuestionAnswer").hidden = true;
+  document.getElementById("FinalResult").hidden = true;
 
-  // Display laboratory results
-  const labsList = document.getElementById("CaseLabs");
-  labsList.innerHTML = "";
+  document.getElementById("QuestionSelect").value = "";
+  document.getElementById("DiagnosisSelect").value = "";
 
-  selectedCase.labs.forEach(function(lab) {
-    const item = document.createElement("li");
-    item.textContent = lab;
-    labsList.appendChild(item);
-  });
-
-  // Keep the selected case available for later game features
-  currentCase = selectedCase;
+  buildBoard();
 }
 
 
-// Store the selected case for the investigation
-let currentCase = null;
+// DISPLAY SYMPTOMS AND LAB RESULTS
+
+function fillList(elementId, entries) {
+
+  const list = document.getElementById(elementId);
+  list.innerHTML = "";
+
+  entries.forEach(function(entry) {
+    const item = document.createElement("li");
+    item.textContent = entry;
+    list.appendChild(item);
+  });
+
+}
+
+
+// BUILD THE 16 PATHOGEN CARDS
+
+function buildBoard() {
+
+  const board = document.getElementById("PathogenBoard");
+  board.innerHTML = "";
+
+  pathogens.forEach(function(pathogen, index) {
+
+    const card = document.createElement("button");
+
+    card.type = "button";
+    card.className = "pathogen-card";
+    card.setAttribute("aria-pressed", "false");
+    card.setAttribute(
+      "aria-label",
+      pathogen.name + ", active suspect. Click to eliminate."
+    );
+
+    card.dataset.index = index;
+
+    const img = document.createElement("img");
+
+    img.src = "images/" + encodeURIComponent(pathogen.image);
+    img.alt = "Image representing " + pathogen.name;
+
+    img.onerror = function() {
+      img.alt = "Image not found: " + pathogen.image;
+      img.style.display = "none";
+
+      const warning = document.createElement("span");
+      warning.className = "small-note";
+      warning.textContent = "Image not found";
+
+      card.insertBefore(warning, card.firstChild);
+    };
+
+    const name = document.createElement("span");
+    name.className = "pathogen-name";
+    name.textContent = pathogen.name;
+
+    card.appendChild(img);
+    card.appendChild(name);
+
+    card.addEventListener("click", function() {
+      toggleCard(card, pathogen.name);
+    });
+
+    board.appendChild(card);
+
+  });
+
+}
+
+
+// MANUALLY ELIMINATE OR RESTORE A CARD
+
+function toggleCard(card, pathogenName) {
+
+  const eliminated = card.classList.toggle("eliminated");
+
+  card.setAttribute("aria-pressed", String(eliminated));
+
+  card.setAttribute(
+    "aria-label",
+    pathogenName + (
+      eliminated
+        ? ", eliminated. Click to restore."
+        : ", active suspect. Click to eliminate."
+    )
+  );
+
+}
+
+
+// RESTORE ALL CARDS
+
+function RestoreAllCards() {
+
+  document.querySelectorAll(".pathogen-card").forEach(function(card) {
+
+    card.classList.remove("eliminated");
+    card.setAttribute("aria-pressed", "false");
+
+    const name = card.querySelector(".pathogen-name").textContent;
+
+    card.setAttribute(
+      "aria-label",
+      name + ", active suspect. Click to eliminate."
+    );
+
+  });
+
+}
+
+
+// ASK A YES/NO QUESTION
+
+function AskQuestion() {
+
+  if (!currentCase) return;
+
+  const selectedText = document.getElementById("QuestionSelect").value;
+
+  if (selectedText === "") {
+    alert("Please choose a question first.");
+    return;
+  }
+
+  const question = questions.find(function(item) {
+    return item.text === selectedText;
+  });
+
+  const answerName =
+    currentCase.answer === "Escherichia coli (STEC)"
+      ? "Escherichia coli"
+      : currentCase.answer;
+
+  const hiddenPathogen = pathogens.find(function(item) {
+    return item.name === answerName;
+  });
+
+  if (!hiddenPathogen) {
+    document.getElementById("QuestionAnswer").textContent =
+      "This question is not available for the selected case yet.";
+
+    document.getElementById("QuestionAnswer").hidden = false;
+    return;
+  }
+
+  const answer = hiddenPathogen.traits[question.trait] ? "YES" : "NO";
+
+  questionsAsked += 1;
+
+  document.getElementById("QuestionAnswer").textContent =
+    "Answer: " + answer + ".";
+
+  document.getElementById("QuestionAnswer").hidden = false;
+
+  document.getElementById("QuestionCount").textContent =
+    "Questions asked: " + questionsAsked;
+
+}
+
+
+// SUBMIT THE FINAL DIAGNOSIS
+
+function SubmitDiagnosis() {
+
+  if (!currentCase) return;
+
+  const guess = document.getElementById("DiagnosisSelect").value;
+
+  if (guess === "") {
+    alert("Please choose your final diagnosis first.");
+    return;
+  }
+
+  const result = document.getElementById("FinalResult");
+
+  const correct =
+    guess === currentCase.answer ||
+    (
+      currentCase.answer === "Escherichia coli (STEC)" &&
+      guess === "Escherichia coli"
+    );
+
+  if (correct) {
+
+    result.innerHTML =
+      "<h3>Correct diagnosis!</h3>" +
+      "<p>The pathogen was <strong>" +
+      escapeHTML(currentCase.answer) +
+      "</strong>.</p>" +
+      "<p>You asked " + questionsAsked + " question(s).</p>";
+
+  } else {
+
+    result.innerHTML =
+      "<h3>Not quite — case solved!</h3>" +
+      "<p>The correct pathogen was <strong>" +
+      escapeHTML(currentCase.answer) +
+      "</strong>.</p>" +
+      "<p>You selected <strong>" +
+      escapeHTML(guess) +
+      "</strong> and asked " +
+      questionsAsked + " question(s).</p>";
+
+  }
+
+  result.hidden = false;
+
+}
+
+
+// SAFELY DISPLAY TEXT IN THE RESULT
+
+function escapeHTML(value) {
+
+  return String(value).replace(/[&<>"']/g, function(character) {
+
+    return {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    }[character];
+
+  });
+
+}
+
+
+// ADD QUESTIONS TO THE QUESTION MENU
+
+questions.forEach(function(question) {
+
+  const option = document.createElement("option");
+
+  option.value = question.text;
+  option.textContent = question.text;
+
+  document.getElementById("QuestionSelect").appendChild(option);
+
+});
+
+
+// ADD PATHOGENS TO THE DIAGNOSIS MENU
+
+pathogens.forEach(function(pathogen) {
+
+  const option = document.createElement("option");
+
+  option.value = pathogen.name;
+  option.textContent = pathogen.name;
+
+  document.getElementById("DiagnosisSelect").appendChild(option);
+
+});
 
 </script>
 
