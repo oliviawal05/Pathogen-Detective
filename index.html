@@ -53,6 +53,45 @@ button, select {
   width: 94%;
 }
 
+  /* CASE SELECTION BUTTONS */
+
+.case-choices {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 15px;
+  margin-top: 25px;
+}
+
+.case-choice {
+  background: #254650;
+  color: #f3f7f5;
+  border: 2px solid #55737b;
+  border-radius: 12px;
+  padding: 22px 15px;
+  min-height: 100px;
+  line-height: 1.5;
+  transition: 0.2s;
+}
+
+.case-choice:hover {
+  background: #345b66;
+  border-color: #e8c86d;
+  transform: translateY(-3px);
+}
+
+.case-choice strong {
+  display: block;
+  color: #e8c86d;
+  font-size: 17px;
+  margin-bottom: 6px;
+}
+
+@media (max-width: 600px) {
+  .case-choices {
+    grid-template-columns: 1fr;
+  }
+}
+  
 .case-section {
   text-align: left;
   margin-top: 25px;
@@ -222,6 +261,24 @@ select {
   <button class="primary" onclick="StartGame()">Start Game</button>
 </div>
 
+  <!-- CASE SELECTION SCREEN -->
+
+<div class="panel" id="CaseSelectionScreen" hidden>
+
+  <h2>Choose Your Clinical Case</h2>
+
+  <p>
+    Select a patient case below to begin your investigation.
+  </p>
+
+  <div id="CaseChoices" class="case-choices"></div>
+
+  <button class="secondary" onclick="BackToWelcome()">
+    Back to Welcome Screen
+  </button>
+
+</div>
+
 <!-- GAME SCREEN -->
 
 <div class="panel" id="GameScreen" hidden>
@@ -335,7 +392,14 @@ select {
     <p id="ExplanationSignificance"></p>
   </div>
 
-  <button class="secondary" onclick="StartGame()">Start another case</button>
+<button
+  class="primary"
+  id="ChooseAnotherCaseButton"
+  onclick="ShowCaseSelection()"
+  hidden
+>
+  Choose Another Case
+</button>
 </div>
 
 <script>
