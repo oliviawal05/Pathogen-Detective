@@ -564,6 +564,54 @@ function buildCaseSelection() {
   });
 
 }
+  // OPEN THE SELECTED CLINICAL CASE
+
+function SelectCase(index) {
+
+  currentCase = cases[index];
+
+  // Reset the score and question counter
+  questionsAsked = 0;
+  score = 100;
+
+  // Show the game screen
+  document.getElementById("CaseSelectionScreen").hidden = true;
+  document.getElementById("GameScreen").hidden = false;
+
+  // Display the selected case
+  document.getElementById("CaseNumber").textContent =
+    "CASE FILE " + (index + 1) + " OF " + cases.length;
+
+  document.getElementById("CaseTitle").textContent =
+    currentCase.title;
+
+  document.getElementById("CaseBackground").textContent =
+    currentCase.background;
+
+  fillList("CaseSymptoms", currentCase.symptoms);
+  fillList("CaseLabs", currentCase.labs);
+
+  // Reset the investigation
+  document.getElementById("QuestionCount").textContent =
+    "Questions asked: 0 | Score: 100 points";
+
+  document.getElementById("QuestionAnswer").hidden = true;
+  document.getElementById("QuestionAnswer").textContent = "";
+
+  document.getElementById("FinalResult").hidden = true;
+  document.getElementById("FinalResult").innerHTML = "";
+
+  document.getElementById("CaseExplanation").hidden = true;
+
+  document.getElementById("ChooseAnotherCaseButton").hidden = true;
+
+  document.getElementById("QuestionSelect").value = "";
+  document.getElementById("DiagnosisSelect").value = "";
+
+  // Restore all 16 pathogen cards
+  buildBoard();
+
+}
 
 // CASE EXPLANATIONS
 // These explanations remain hidden until the student submits a diagnosis.
