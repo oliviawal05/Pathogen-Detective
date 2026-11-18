@@ -867,9 +867,36 @@ let questionsAsked = 0;
 let score = 100;
 
 
-// START A RANDOM CASE
+// SHOW THE CASE SELECTION SCREEN
 
 function StartGame() {
+
+  document.getElementById("WelcomeScreen").hidden = true;
+  document.getElementById("GameScreen").hidden = true;
+  document.getElementById("CaseSelectionScreen").hidden = false;
+
+}
+
+
+// RETURN TO THE WELCOME SCREEN
+
+function BackToWelcome() {
+
+  document.getElementById("CaseSelectionScreen").hidden = true;
+  document.getElementById("WelcomeScreen").hidden = false;
+
+}
+
+
+// RETURN TO THE CASE SELECTION SCREEN
+
+function ShowCaseSelection() {
+
+  document.getElementById("GameScreen").hidden = true;
+  document.getElementById("CaseSelectionScreen").hidden = false;
+
+}
+  
 
   const randomIndex = Math.floor(Math.random() * cases.length);
   currentCase = cases[randomIndex];
