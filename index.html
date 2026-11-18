@@ -973,32 +973,6 @@ function ShowCaseSelection() {
 }
   
 
-  const randomIndex = Math.floor(Math.random() * cases.length);
-  currentCase = cases[randomIndex];
-
-  questionsAsked = 0;
-  score = 100;
-
-  document.getElementById("WelcomeScreen").hidden = true;
-  document.getElementById("GameScreen").hidden = false;
-
-  document.getElementById("CaseNumber").textContent = "CASE FILE";
-  document.getElementById("CaseTitle").textContent = currentCase.title;
-  document.getElementById("CaseBackground").textContent = currentCase.background;
-
-  fillList("CaseSymptoms", currentCase.symptoms);
-  fillList("CaseLabs", currentCase.labs);
-
-  document.getElementById("QuestionCount").textContent = "Questions asked: 0 | Score 100 points";
-  document.getElementById("QuestionAnswer").hidden = true;
-  document.getElementById("FinalResult").hidden = true;
-  document.getElementById("CaseExplanation").hidden = true;
-
-  document.getElementById("QuestionSelect").value = "";
-  document.getElementById("DiagnosisSelect").value = "";
-
-  buildBoard();
-}
 
 
 // DISPLAY SYMPTOMS AND LAB RESULTS
@@ -1292,6 +1266,9 @@ pathogens.forEach(function(pathogen) {
   document.getElementById("DiagnosisSelect").appendChild(option);
 
 });
+  // CREATE THE FIVE CASE SELECTION BUTTONS
+
+buildCaseSelection();
 
 </script>
 
