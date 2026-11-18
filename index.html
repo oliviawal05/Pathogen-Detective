@@ -536,7 +536,34 @@ const cases = [
   }
 
 ];
+// BUILD THE CASE SELECTION MENU
 
+function buildCaseSelection() {
+
+  const container = document.getElementById("CaseChoices");
+
+  container.innerHTML = "";
+
+  cases.forEach(function(clinicalCase, index) {
+
+    const button = document.createElement("button");
+
+    button.type = "button";
+    button.className = "case-choice";
+
+    button.innerHTML =
+      "<strong>Case " + (index + 1) + "</strong>" +
+      clinicalCase.title;
+
+    button.addEventListener("click", function() {
+      SelectCase(index);
+    });
+
+    container.appendChild(button);
+
+  });
+
+}
 
 // CASE EXPLANATIONS
 // These explanations remain hidden until the student submits a diagnosis.
