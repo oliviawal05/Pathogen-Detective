@@ -243,6 +243,38 @@ select {
 @media (min-width: 701px) and (max-width: 950px) {
   .board { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
+  
+.deduction-note {
+  background: #123b40;
+  border: 2px solid #d6a84b;
+  border-radius: 12px;
+  padding: 18px;
+  margin: 20px auto;
+  max-width: 650px;
+  text-align: left;
+  color: #ffffff;
+  line-height: 1.6;
+}
+
+.deduction-note h3 {
+  color: #d6a84b;
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+.deduction-note p {
+  margin-bottom: 12px;
+}
+
+.deduction-note .deduction-footer {
+  text-align: center;
+  color: #d6a84b;
+  font-weight: bold;
+  margin-bottom: 0;
+  font-style: italic;
+}
+
 </style>
 </head>
 
@@ -258,6 +290,38 @@ select {
 <div class="panel" id="WelcomeScreen">
   <h2>Welcome, Detective!</h2>
   <p>Are you ready to investigate your first clinical case?</p>
+  
+<div class="deduction-note">
+  <h3>🔬 A Detective's Guide to Deduction 🕵️</h3>
+
+  <p>
+    The aim of <strong>Pathogen Detective</strong> is to identify
+    the <strong>most likely pathogen</strong> using the clinical
+    information and answers to your questions.
+  </p>
+
+  <p>
+    🧩 This is a deduction game, not a test of whether a pathogen
+    could ever display a particular characteristic in every
+    possible circumstance.
+  </p>
+
+  <p>
+    🦠 Answers are based on the typical characteristics of each
+    pathogen. Some characteristics can vary between strains,
+    clinical circumstances or patients.
+  </p>
+
+  <p>
+    🔍 Use the clues together to narrow down your suspects and
+    choose the pathogen that best fits the case!
+  </p>
+
+  <p class="deduction-footer">
+    Think like a microbiologist, investigate like a detective!
+  </p>
+</div>
+
   <button class="primary" onclick="StartGame()">Start Game</button>
 </div>
 
@@ -1087,7 +1151,7 @@ function RestoreAllCards() {
 }
 
 
-// ASK A YES/NO QUESTION
+// ASK A YES/NO/N/A QUESTION
 
 function AskQuestion() {
 
@@ -1103,6 +1167,61 @@ function AskQuestion() {
   const question = questions.find(function(item) {
     return item.text === selectedText;
   });
+
+  if (!question) {
+    alert("Question not found. Please try again.");
+    return;
+  }
+
+  const answerName =
+    currentCase.answer === "Escherichia coli (STEC)"
+      ? "Escherichia coli"
+      : currentCase.answer;
+
+  const hiddenPathogen = pathogens.find(function(item) {
+    return item.name === answerName;
+  });
+
+  if (!hiddenPathogen) {
+    document.getElementById("QuestionAnswer").textContent =
+      "This question is not available for the selected case yet.";
+
+    document.getElementById("QuestionAnswer").hidden = false;
+    return;
+  }
+
+  const traitValue = hiddenPathogen.traits[question.trait];
+
+  let answer;
+
+  if (traitValue === true || traitValue === "yes") {
+    answer = "YES";
+  } else if (traitValue === false || traitValue === "no") {
+    answer = "NO";
+  } else if (traitValue === "na") {
+    answer = "N/A";
+  } else {
+    answer = "N/A";
+  }
+
+  questionsAsked += 1;
+  score = Math.max(0, score - 5);
+
+  let answerMessage = "Answer: " + answer + ".";
+
+  if (answer === "N/A") {
+    answerMessage += " This question does not apply or cannot be answered reliably for this pathogen.";
+  }
+
+  document.getElementById("QuestionAnswer").textContent =
+    answerMessage;
+
+  document.getElementById("QuestionAnswer").hidden = false;
+
+  document.getElementById("QuestionCount").textContent =
+    "Questions asked: " + questionsAsked + " | Score: " + score + " points";
+
+}
 
   const answerName =
     currentCase.answer === "Escherichia coli (STEC)"
