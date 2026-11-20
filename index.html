@@ -340,6 +340,9 @@ select {
   <button class="secondary" onclick="BackToWelcome()">
     Back to Welcome Screen
   </button>
+  <button class="secondary" onclick="EndGame()">
+    End Game
+</button>
 
 </div>
 
@@ -468,6 +471,38 @@ select {
 >
   Choose Another Case
 </button>
+  <button
+  class="primary"
+  id="ChooseAnotherCaseButton"
+  onclick="ShowCaseSelection()"
+  hidden
+>
+    Choose Another Case
+</button>
+
+<button class="secondary" onclick="EndGame()">
+    End Game
+</button>
+</div>
+  <!-- FINAL GAME RESULTS SCREEN -->
+<div class="panel" id="EndGameScreen" hidden>
+    <h2>🏆 Investigation Complete! 🏆</h2>
+    <p>Well done, Detective! Here are your final results.</p>
+
+    <h3 id="FinalTotalScore">Total Score: 0 points</h3>
+    <p id="CasesCompleted">Cases completed: 0 out of 5</p>
+    <p id="MaximumPossibleScore">Maximum possible score: 0 points</p>
+    <p id="FinalAverageScore">Average score: 0 points</p>
+
+    <div class="case-section">
+        <h3>Share Your Feedback</h3>
+        <p>Please complete our survey to share your experience of playing Pathogen Detective.</p>
+        <a id="SurveyLink" href="#" target="_blank" rel="noopener noreferrer" hidden>
+            <button class="primary" type="button">Complete the Survey</button>
+        </a>
+    </div>
+
+    <button class="secondary" onclick="location.reload()">Play Again</button>
 </div>
 
 <script>
@@ -641,6 +676,7 @@ function SelectCase(index) {
   // Reset the score and question counter
   questionsAsked = 0;
   score = 100;
+ currentCaseRecorded = false;
 
   // Show the game screen
   document.getElementById("CaseSelectionScreen").hidden = true;
@@ -1862,11 +1898,20 @@ const questionCategories = [
 let currentCase = null;
 let questionsAsked = 0;
 let score = 100;
+let totalScore = 0;
+let casesAttempted = 0;
+let currentCaseRecorded = false;
+let surveyURL = "";
 
 
 // SHOW THE CASE SELECTION SCREEN
 
 function StartGame() {
+
+  // Reset the overall game totals
+  totalScore = 0;
+  casesAttempted = 0;
+  currentCaseRecorded = false;
 
   document.getElementById("WelcomeScreen").hidden = true;
   document.getElementById("GameScreen").hidden = true;
@@ -2134,6 +2179,13 @@ function SubmitDiagnosis() {
 
   if (correct) {
 
+    // Add this case's score to the overall total only once
+    if (!currentCaseRecorded) {
+      totalScore += score;
+      casesAttempted++;
+      currentCaseRecorded = true;
+    }
+
     result.innerHTML =
       "<h3>🏆 Correct diagnosis! Excellent detective work! 🏆</h3>" +
       "<p>The pathogen was <strong>" +
@@ -2233,7 +2285,38 @@ pathogens.forEach(function(pathogen) {
   // CREATE THE FIVE CASE SELECTION BUTTONS
 
 buildCaseSelection();
+function EndGame() {
 
+  document.getElementById("WelcomeScreen").hidden = true;
+  document.getElementById("CaseSelectionScreen").hidden = true;
+  document.getElementById("GameScreen").hidden = true;
+
+  document.getElementById("EndGameScreen").hidden = false;
+
+  const maximumScore = casesAttempted * 100;
+
+  const averageScore = casesAttempted > 0
+    ? (totalScore / casesAttempted).toFixed(1)
+    : 0;
+
+  document.getElementById("FinalTotalScore").textContent =
+    "Total Score: " + totalScore + " points";
+
+  document.getElementById("CasesCompleted").textContent =
+    "Cases completed: " + casesAttempted + " out of 5";
+
+  document.getElementById("MaximumPossibleScore").textContent =
+    "Maximum possible score: " + maximumScore + " points";
+
+  document.getElementById("FinalAverageScore").textContent =
+    "Average score: " + averageScore + " points";
+
+  if (surveyURL !== "") {
+    const surveyLink = document.getElementById("SurveyLink");
+    surveyLink.href = surveyURL;
+    surveyLink.hidden = false;
+  }
+}
 </script>
 
 </body>
