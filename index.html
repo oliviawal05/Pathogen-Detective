@@ -642,7 +642,30 @@ const cases = [
       "A possible small cavitary lesion is identified",
       "Sputum samples sent for further microbiological testing"
     ]
-  }
+  },
+
+  
+{
+  answer: "Staphylococcus Aureus)",
+  title: "The Mystery of the Painful Skin Abscess",
+  background: "Emma is a 32-year-old woman who notices a small, painful red bump on her lower leg while shaving. Initially, she assumes it is an ingrown hair or shaving irritation. Over the next few days, the area becomes increasingly swollen, red and painful. The bump develops into a pus-filled lesion, prompting Emma to seek medical attention.",
+  additionalInformation: "During examination, the GP notices that the affected area has developed into a painful skin abscess containing thick yellow pus. Emma reports that the swelling has continued to increase in size over the past few days. A wound swab is collected and sent to the microbiology laboratory for bacterial identification and antibiotic susceptibility testing.",
+  symptoms: [
+    "Localised redness around the affected area",
+    "Pain and tenderness",
+    "Warmth and swelling of the surrounding skin",
+    "A raised lump containing pus",
+    "Mild fever",
+    "Swollen lymph nodes near the affected area"
+  ],
+  labs: [
+    "Gram staining reveals Gram-positive cocci arranged in clusters",
+    "Catalase test produces a positive result",
+    "Coagulase test produces a positive result"
+  ]
+},
+
+  
 
 ];
 // BUILD THE CASE SELECTION MENU
@@ -840,9 +863,32 @@ const caseExplanations = {
 
     significance:
       "Active TB requires specialist-led multidrug treatment and public-health sector involvement, including assessment of his close contacts. Shaun's initial treatment phase started with isoniazid, rifampicin, pyrazinamide and ethambutol, however, the exact regimen and duration is dependant on professional evaulation of his condition. Completing treatment is essential to cure infection and reduce the risk of drug resistance."
+  
+  },
+
+  "Staphylococcus aureus": {
+
+    disease:
+      "Methicillin-resistant Staphylococcus aureus (MRSA) skin and soft tissue infection, presenting as a skin abscess.",
+
+    why:
+      "Emma's painful, red, warm and swollen skin lesion, which develops into a pus-filled abscess, is consistent with a Staphylococcus aureus skin infection. Gram-positive cocci arranged in clusters, together with positive catalase and coagulase tests, support the identification of S. aureus. However, these findings alone do not establish methicillin resistance. Additional antibiotic susceptibility testing or molecular testing is required to confirm MRSA.",
+
+    microbiology:
+      "Staphylococcus aureus is a Gram-positive, spherical bacterium (coccus) that commonly appears in grape-like clusters. It is catalase-positive and coagulase-positive and is a facultative anaerobe. Methicillin-resistant Staphylococcus aureus (MRSA) is a strain that has developed resistance to several beta-lactam antibiotics. This resistance is commonly associated with the mecA gene, or less commonly mecC, which produces an altered penicillin-binding protein called PBP2a. This protein reduces the effectiveness of many beta-lactam antibiotics.",
+
+    laboratory:
+      "A wound swab from the abscess can be sent for bacterial culture. Gram staining may reveal Gram-positive cocci in clusters. Catalase and coagulase tests help identify S. aureus. To establish whether the isolate is MRSA, the laboratory performs antibiotic susceptibility testing, commonly using cefoxitin as a marker of methicillin resistance, or molecular testing to detect mecA or mecC. The results help guide appropriate antibiotic treatment.",
+
+    pathogenesis:
+      "S. aureus can enter the body through breaks in the skin, including small cuts or abrasions. It can multiply in the surrounding tissue and trigger an inflammatory response, leading to redness, warmth, swelling, pain and pus formation. MRSA strains possess resistance mechanisms that allow them to survive exposure to certain antibiotics, making treatment more challenging. The infection may remain localised or spread to surrounding tissues and, in more serious cases, enter the bloodstream.",
+
+    significance:
+      "Skin abscesses often require incision and drainage to remove the collected pus. Antibiotic treatment may also be needed, depending on the severity of the infection, the patient's clinical condition and the susceptibility results. MRSA infections require antibiotics that are appropriate for the identified resistance pattern. Good hand hygiene, keeping wounds clean and covered, and avoiding the sharing of personal items can help reduce transmission. Early recognition and appropriate treatment help prevent complications and further spread."
   }
 
 };
+
 
 
 // 16 PATHOGEN CARDS AND THEIR IMAGE FILES
