@@ -381,8 +381,12 @@ select {
     </p>
 
     <div class="investigation-controls">
-      <select id="QuestionSelect" aria-label="Choose an investigation question">
-        <option value="">Choose a question...</option>
+      <select id="CategorySelect" aria-label="Choose a question category" onchange="populateQuestionMenu()">
+        <option value="">Choose a category...</option>
+      </select>
+
+      <select id="QuestionSelect" aria-label="Choose an investigation question" disabled>
+        <option value="">Choose a category first...</option>
       </select>
 
       <button class="primary" onclick="AskQuestion()">Ask question</button>
@@ -669,7 +673,10 @@ function SelectCase(index) {
 
   document.getElementById("ChooseAnotherCaseButton").hidden = true;
 
-  document.getElementById("QuestionSelect").value = "";
+  document.getElementById("CategorySelect").value = "";
+  document.getElementById("QuestionSelect").innerHTML =
+    '<option value="">Choose a category first...</option>';
+  document.getElementById("QuestionSelect").disabled = true;
   document.getElementById("DiagnosisSelect").value = "";
 
   // Restore all 16 pathogen cards
@@ -957,7 +964,7 @@ const pathogens = [
   },
 
   {
-    name: "Staphylococcus aureaus",
+    name: "Staphylococcus aureus",
     image: "Staphylococcus Aureaus.png",
     traits: {
       bacterium: true, gramPositive: true, spore: false,
@@ -981,23 +988,874 @@ const pathogens = [
 ];
 
 
-// YES/NO QUESTIONS
+// FOUR QUESTION CATEGORIES WITH THE YES/NO ANSWER TABLES
 
-const questions = [
-  { text: "Is it a bacterium?", trait: "bacterium" },
-  { text: "Is it a virus?", trait: "virus" },
-  { text: "Is it a fungus?", trait: "fungus" },
-  { text: "Is it a parasite?", trait: "parasite" },
-  { text: "Is it Gram-positive?", trait: "gramPositive" },
-  { text: "Is it an acid-fast organism?", trait: "acidFast" },
-  { text: "Does it form bacterial endospores?", trait: "spore" },
-  { text: "Is it an enveloped virus?", trait: "envelope" },
-  { text: "Is it transmitted by an insect vector?", trait: "vector" },
-  { text: "Does it infect red blood cells?", trait: "redCell" },
-  { text: "Is respiratory transmission important?", trait: "respiratory" },
-  { text: "Can it be transmitted through contaminated food?", trait: "foodborne" }
+const questionCategories = [
+  {
+    "id": "transmission",
+    "title": "Category 1 – Transmission and general characteristics",
+    "questions": [
+      {
+        "text": "Is this pathogen primarily associated with infections of the respiratory tract?",
+        "answers": {
+          "Bacillus anthracis": "NO",
+          "Candida albicans": "NO",
+          "Escherichia coli": "NO",
+          "HIV": "NO",
+          "Influenza A": "YES",
+          "Listeria monocytogenes": "NO",
+          "Measles virus": "YES",
+          "Mycobacterium tuberculosis": "YES",
+          "Neisseria gonorrhoeae": "NO",
+          "Neisseria meningitidis": "NO",
+          "Plasmodium falciparum": "NO",
+          "Pneumocystis jirovecii": "YES",
+          "SARS-CoV-2": "YES",
+          "Salmonella enterica": "NO",
+          "Staphylococcus aureus": "NO",
+          "Vibrio cholerae": "NO"
+        }
+      },
+      {
+        "text": "Does this pathogen characteristically cause persistent or chronic infection?",
+        "answers": {
+          "Bacillus anthracis": "NO",
+          "Candida albicans": "NO",
+          "Escherichia coli": "NO",
+          "HIV": "YES",
+          "Influenza A": "NO",
+          "Listeria monocytogenes": "NO",
+          "Measles virus": "NO",
+          "Mycobacterium tuberculosis": "YES",
+          "Neisseria gonorrhoeae": "NO",
+          "Neisseria meningitidis": "NO",
+          "Plasmodium falciparum": "NO",
+          "Pneumocystis jirovecii": "NO",
+          "SARS-CoV-2": "NO",
+          "Salmonella enterica": "NO",
+          "Staphylococcus aureus": "NO",
+          "Vibrio cholerae": "NO"
+        }
+      },
+      {
+        "text": "Is inhalation of infectious particles or spores a recognised route of transmission?",
+        "answers": {
+          "Bacillus anthracis": "YES",
+          "Candida albicans": "NO",
+          "Escherichia coli": "NO",
+          "HIV": "NO",
+          "Influenza A": "YES",
+          "Listeria monocytogenes": "NO",
+          "Measles virus": "YES",
+          "Mycobacterium tuberculosis": "YES",
+          "Neisseria gonorrhoeae": "NO",
+          "Neisseria meningitidis": "YES",
+          "Plasmodium falciparum": "NO",
+          "Pneumocystis jirovecii": "YES",
+          "SARS-CoV-2": "YES",
+          "Salmonella enterica": "NO",
+          "Staphylococcus aureus": "NO",
+          "Vibrio cholerae": "NO"
+        }
+      },
+      {
+        "text": "Is ingestion of contaminated food or water a major route of transmission?",
+        "answers": {
+          "Bacillus anthracis": "NO",
+          "Candida albicans": "NO",
+          "Escherichia coli": "YES",
+          "HIV": "NO",
+          "Influenza A": "NO",
+          "Listeria monocytogenes": "YES",
+          "Measles virus": "NO",
+          "Mycobacterium tuberculosis": "NO",
+          "Neisseria gonorrhoeae": "NO",
+          "Neisseria meningitidis": "NO",
+          "Plasmodium falciparum": "NO",
+          "Pneumocystis jirovecii": "NO",
+          "SARS-CoV-2": "NO",
+          "Salmonella enterica": "YES",
+          "Staphylococcus aureus": "NO",
+          "Vibrio cholerae": "YES"
+        }
+      },
+      {
+        "text": "Is gastrointestinal illness a characteristic presentation of infection?",
+        "answers": {
+          "Bacillus anthracis": "NO",
+          "Candida albicans": "NO",
+          "Escherichia coli": "YES",
+          "HIV": "NO",
+          "Influenza A": "NO",
+          "Listeria monocytogenes": "YES",
+          "Measles virus": "NO",
+          "Mycobacterium tuberculosis": "NO",
+          "Neisseria gonorrhoeae": "NO",
+          "Neisseria meningitidis": "NO",
+          "Plasmodium falciparum": "NO",
+          "Pneumocystis jirovecii": "NO",
+          "SARS-CoV-2": "NO",
+          "Salmonella enterica": "YES",
+          "Staphylococcus aureus": "NO",
+          "Vibrio cholerae": "YES"
+        }
+      },
+      {
+        "text": "Are neurological complications a recognised feature of infection with this pathogen?",
+        "answers": {
+          "Bacillus anthracis": "YES",
+          "Candida albicans": "YES",
+          "Escherichia coli": "YES",
+          "HIV": "YES",
+          "Influenza A": "YES",
+          "Listeria monocytogenes": "YES",
+          "Measles virus": "YES",
+          "Mycobacterium tuberculosis": "YES",
+          "Neisseria gonorrhoeae": "YES",
+          "Neisseria meningitidis": "YES",
+          "Plasmodium falciparum": "YES",
+          "Pneumocystis jirovecii": "YES",
+          "SARS-CoV-2": "YES",
+          "Salmonella enterica": "YES",
+          "Staphylococcus aureus": "YES",
+          "Vibrio cholerae": "YES"
+        }
+      },
+      {
+        "text": "Can this pathogen spread directly from an infected person to another person?",
+        "answers": {
+          "Bacillus anthracis": "NO",
+          "Candida albicans": "NO",
+          "Escherichia coli": "YES",
+          "HIV": "YES",
+          "Influenza A": "YES",
+          "Listeria monocytogenes": "NO",
+          "Measles virus": "YES",
+          "Mycobacterium tuberculosis": "YES",
+          "Neisseria gonorrhoeae": "YES",
+          "Neisseria meningitidis": "YES",
+          "Plasmodium falciparum": "NO",
+          "Pneumocystis jirovecii": "YES",
+          "SARS-CoV-2": "YES",
+          "Salmonella enterica": "YES",
+          "Staphylococcus aureus": "NO",
+          "Vibrio cholerae": "NO"
+        }
+      },
+      {
+        "text": "Does this pathogen require an insect vector for transmission to humans?",
+        "answers": {
+          "Bacillus anthracis": "NO",
+          "Candida albicans": "NO",
+          "Escherichia coli": "NO",
+          "HIV": "NO",
+          "Influenza A": "NO",
+          "Listeria monocytogenes": "NO",
+          "Measles virus": "NO",
+          "Mycobacterium tuberculosis": "NO",
+          "Neisseria gonorrhoeae": "NO",
+          "Neisseria meningitidis": "NO",
+          "Plasmodium falciparum": "YES",
+          "Pneumocystis jirovecii": "NO",
+          "SARS-CoV-2": "NO",
+          "Salmonella enterica": "NO",
+          "Staphylococcus aureus": "NO",
+          "Vibrio cholerae": "NO"
+        }
+      },
+      {
+        "text": "Is this pathogen a recognised cause of urinary tract infection?",
+        "answers": {
+          "Bacillus anthracis": "NO",
+          "Candida albicans": "YES",
+          "Escherichia coli": "NO",
+          "HIV": "NO",
+          "Influenza A": "NO",
+          "Listeria monocytogenes": "NO",
+          "Measles virus": "NO",
+          "Mycobacterium tuberculosis": "NO",
+          "Neisseria gonorrhoeae": "NO",
+          "Neisseria meningitidis": "NO",
+          "Plasmodium falciparum": "NO",
+          "Pneumocystis jirovecii": "NO",
+          "SARS-CoV-2": "NO",
+          "Salmonella enterica": "NO",
+          "Staphylococcus aureus": "YES",
+          "Vibrio cholerae": "NO"
+        }
+      },
+      {
+        "text": "Does infection characteristically produce a recognisable skin rash or lesion?",
+        "answers": {
+          "Bacillus anthracis": "YES",
+          "Candida albicans": "YES",
+          "Escherichia coli": "NO",
+          "HIV": "NO",
+          "Influenza A": "NO",
+          "Listeria monocytogenes": "NO",
+          "Measles virus": "YES",
+          "Mycobacterium tuberculosis": "NO",
+          "Neisseria gonorrhoeae": "NO",
+          "Neisseria meningitidis": "YES",
+          "Plasmodium falciparum": "NO",
+          "Pneumocystis jirovecii": "NO",
+          "SARS-CoV-2": "NO",
+          "Salmonella enterica": "NO",
+          "Staphylococcus aureus": "YES",
+          "Vibrio cholerae": "NO"
+        }
+      }
+    ]
+  },
+  {
+    "id": "organism",
+    "title": "Category 2 – Organism characteristics",
+    "questions": [
+      {
+        "text": "Is this pathogen a bacterium?",
+        "answers": {
+          "Bacillus anthracis": "YES",
+          "Candida albicans": "NO",
+          "Escherichia coli": "YES",
+          "HIV": "NO",
+          "Influenza A": "NO",
+          "Listeria monocytogenes": "YES",
+          "Measles virus": "NO",
+          "Mycobacterium tuberculosis": "YES",
+          "Neisseria gonorrhoeae": "YES",
+          "Neisseria meningitidis": "YES",
+          "Plasmodium falciparum": "NO",
+          "Pneumocystis jirovecii": "NO",
+          "SARS-CoV-2": "NO",
+          "Salmonella enterica": "YES",
+          "Staphylococcus aureus": "YES",
+          "Vibrio cholerae": "YES"
+        }
+      },
+      {
+        "text": "Is this pathogen a virus?",
+        "answers": {
+          "Bacillus anthracis": "NO",
+          "Candida albicans": "NO",
+          "Escherichia coli": "NO",
+          "HIV": "YES",
+          "Influenza A": "YES",
+          "Listeria monocytogenes": "NO",
+          "Measles virus": "YES",
+          "Mycobacterium tuberculosis": "NO",
+          "Neisseria gonorrhoeae": "NO",
+          "Neisseria meningitidis": "NO",
+          "Plasmodium falciparum": "NO",
+          "Pneumocystis jirovecii": "NO",
+          "SARS-CoV-2": "YES",
+          "Salmonella enterica": "NO",
+          "Staphylococcus aureus": "NO",
+          "Vibrio cholerae": "NO"
+        }
+      },
+      {
+        "text": "Is this pathogen a fungus?",
+        "answers": {
+          "Bacillus anthracis": "NO",
+          "Candida albicans": "YES",
+          "Escherichia coli": "NO",
+          "HIV": "NO",
+          "Influenza A": "NO",
+          "Listeria monocytogenes": "NO",
+          "Measles virus": "NO",
+          "Mycobacterium tuberculosis": "NO",
+          "Neisseria gonorrhoeae": "NO",
+          "Neisseria meningitidis": "NO",
+          "Plasmodium falciparum": "NO",
+          "Pneumocystis jirovecii": "YES",
+          "SARS-CoV-2": "NO",
+          "Salmonella enterica": "NO",
+          "Staphylococcus aureus": "NO",
+          "Vibrio cholerae": "NO"
+        }
+      },
+      {
+        "text": "Is this pathogen a protozoan parasite?",
+        "answers": {
+          "Bacillus anthracis": "NO",
+          "Candida albicans": "NO",
+          "Escherichia coli": "NO",
+          "HIV": "NO",
+          "Influenza A": "NO",
+          "Listeria monocytogenes": "NO",
+          "Measles virus": "NO",
+          "Mycobacterium tuberculosis": "NO",
+          "Neisseria gonorrhoeae": "NO",
+          "Neisseria meningitidis": "NO",
+          "Plasmodium falciparum": "YES",
+          "Pneumocystis jirovecii": "NO",
+          "SARS-CoV-2": "NO",
+          "Salmonella enterica": "NO",
+          "Staphylococcus aureus": "NO",
+          "Vibrio cholerae": "NO"
+        }
+      },
+      {
+        "text": "Does this pathogen typically stain pink during Gram staining?",
+        "answers": {
+          "Bacillus anthracis": "NO",
+          "Candida albicans": "NO",
+          "Escherichia coli": "YES",
+          "HIV": "NO",
+          "Influenza A": "NO",
+          "Listeria monocytogenes": "NO",
+          "Measles virus": "NO",
+          "Mycobacterium tuberculosis": "NO",
+          "Neisseria gonorrhoeae": "YES",
+          "Neisseria meningitidis": "YES",
+          "Plasmodium falciparum": "NO",
+          "Pneumocystis jirovecii": "NO",
+          "SARS-CoV-2": "NO",
+          "Salmonella enterica": "YES",
+          "Staphylococcus aureus": "NO",
+          "Vibrio cholerae": "YES"
+        }
+      },
+      {
+        "text": "Does this pathogen have a single-stranded RNA genome?",
+        "answers": {
+          "Bacillus anthracis": "NO",
+          "Candida albicans": "NO",
+          "Escherichia coli": "NO",
+          "HIV": "YES",
+          "Influenza A": "YES",
+          "Listeria monocytogenes": "NO",
+          "Measles virus": "YES",
+          "Mycobacterium tuberculosis": "NO",
+          "Neisseria gonorrhoeae": "NO",
+          "Neisseria meningitidis": "NO",
+          "Plasmodium falciparum": "NO",
+          "Pneumocystis jirovecii": "NO",
+          "SARS-CoV-2": "YES",
+          "Salmonella enterica": "NO",
+          "Staphylococcus aureus": "NO",
+          "Vibrio cholerae": "NO"
+        }
+      },
+      {
+        "text": "Is this pathogen acid-fast?",
+        "answers": {
+          "Bacillus anthracis": "NO",
+          "Candida albicans": "NO",
+          "Escherichia coli": "NO",
+          "HIV": "NO",
+          "Influenza A": "NO",
+          "Listeria monocytogenes": "NO",
+          "Measles virus": "NO",
+          "Mycobacterium tuberculosis": "YES",
+          "Neisseria gonorrhoeae": "NO",
+          "Neisseria meningitidis": "NO",
+          "Plasmodium falciparum": "NO",
+          "Pneumocystis jirovecii": "NO",
+          "SARS-CoV-2": "NO",
+          "Salmonella enterica": "NO",
+          "Staphylococcus aureus": "NO",
+          "Vibrio cholerae": "NO"
+        }
+      },
+      {
+        "text": "Can this pathogen form endospores?",
+        "answers": {
+          "Bacillus anthracis": "YES",
+          "Candida albicans": "NO",
+          "Escherichia coli": "NO",
+          "HIV": "NO",
+          "Influenza A": "NO",
+          "Listeria monocytogenes": "NO",
+          "Measles virus": "NO",
+          "Mycobacterium tuberculosis": "NO",
+          "Neisseria gonorrhoeae": "NO",
+          "Neisseria meningitidis": "NO",
+          "Plasmodium falciparum": "NO",
+          "Pneumocystis jirovecii": "NO",
+          "SARS-CoV-2": "NO",
+          "Salmonella enterica": "NO",
+          "Staphylococcus aureus": "NO",
+          "Vibrio cholerae": "NO"
+        }
+      },
+      {
+        "text": "Does this pathogen typically possess a capsule?",
+        "answers": {
+          "Bacillus anthracis": "YES",
+          "Candida albicans": "NO",
+          "Escherichia coli": "NO",
+          "HIV": "NO",
+          "Influenza A": "NO",
+          "Listeria monocytogenes": "NO",
+          "Measles virus": "NO",
+          "Mycobacterium tuberculosis": "NO",
+          "Neisseria gonorrhoeae": "NO",
+          "Neisseria meningitidis": "YES",
+          "Plasmodium falciparum": "NO",
+          "Pneumocystis jirovecii": "NO",
+          "SARS-CoV-2": "NO",
+          "Salmonella enterica": "NO",
+          "Staphylococcus aureus": "NO",
+          "Vibrio cholerae": "NO"
+        }
+      },
+      {
+        "text": "Does this pathogen typically possess flagella?",
+        "answers": {
+          "Bacillus anthracis": "NO",
+          "Candida albicans": "NO",
+          "Escherichia coli": "YES",
+          "HIV": "NO",
+          "Influenza A": "NO",
+          "Listeria monocytogenes": "YES",
+          "Measles virus": "NO",
+          "Mycobacterium tuberculosis": "NO",
+          "Neisseria gonorrhoeae": "NO",
+          "Neisseria meningitidis": "NO",
+          "Plasmodium falciparum": "NO",
+          "Pneumocystis jirovecii": "NO",
+          "SARS-CoV-2": "NO",
+          "Salmonella enterica": "YES",
+          "Staphylococcus aureus": "NO",
+          "Vibrio cholerae": "YES"
+        }
+      },
+      {
+        "text": "Is this bacterium rod-shaped (bacillus-shaped)?",
+        "answers": {
+          "Bacillus anthracis": "YES",
+          "Candida albicans": "NO",
+          "Escherichia coli": "YES",
+          "HIV": "NO",
+          "Influenza A": "NO",
+          "Listeria monocytogenes": "YES",
+          "Measles virus": "NO",
+          "Mycobacterium tuberculosis": "YES",
+          "Neisseria gonorrhoeae": "NO",
+          "Neisseria meningitidis": "NO",
+          "Plasmodium falciparum": "NO",
+          "Pneumocystis jirovecii": "NO",
+          "SARS-CoV-2": "NO",
+          "Salmonella enterica": "YES",
+          "Staphylococcus aureus": "NO",
+          "Vibrio cholerae": "YES"
+        }
+      }
+    ]
+  },
+  {
+    "id": "clinical",
+    "title": "Category 3 – Clinical features",
+    "questions": [
+      {
+        "text": "Does infection characteristically cause a sore throat?",
+        "answers": {
+          "Bacillus anthracis": "NO",
+          "Candida albicans": "NO",
+          "Escherichia coli": "NO",
+          "HIV": "NO",
+          "Influenza A": "YES",
+          "Listeria monocytogenes": "NO",
+          "Measles virus": "NO",
+          "Mycobacterium tuberculosis": "NO",
+          "Neisseria gonorrhoeae": "NO",
+          "Neisseria meningitidis": "NO",
+          "Plasmodium falciparum": "NO",
+          "Pneumocystis jirovecii": "NO",
+          "SARS-CoV-2": "YES",
+          "Salmonella enterica": "NO",
+          "Staphylococcus aureus": "NO",
+          "Vibrio cholerae": "NO"
+        }
+      },
+      {
+        "text": "Is a cough a characteristic symptom of infection?",
+        "answers": {
+          "Bacillus anthracis": "NO",
+          "Candida albicans": "NO",
+          "Escherichia coli": "NO",
+          "HIV": "NO",
+          "Influenza A": "YES",
+          "Listeria monocytogenes": "YES",
+          "Measles virus": "NO",
+          "Mycobacterium tuberculosis": "YES",
+          "Neisseria gonorrhoeae": "NO",
+          "Neisseria meningitidis": "NO",
+          "Plasmodium falciparum": "NO",
+          "Pneumocystis jirovecii": "YES",
+          "SARS-CoV-2": "YES",
+          "Salmonella enterica": "NO",
+          "Staphylococcus aureus": "NO",
+          "Vibrio cholerae": "NO"
+        }
+      },
+      {
+        "text": "Can infection characteristically cause bloody diarrhoea?",
+        "answers": {
+          "Bacillus anthracis": "NO",
+          "Candida albicans": "NO",
+          "Escherichia coli": "YES",
+          "HIV": "NO",
+          "Influenza A": "NO",
+          "Listeria monocytogenes": "NO",
+          "Measles virus": "NO",
+          "Mycobacterium tuberculosis": "NO",
+          "Neisseria gonorrhoeae": "YES",
+          "Neisseria meningitidis": "NO",
+          "Plasmodium falciparum": "NO",
+          "Pneumocystis jirovecii": "NO",
+          "SARS-CoV-2": "NO",
+          "Salmonella enterica": "YES",
+          "Staphylococcus aureus": "NO",
+          "Vibrio cholerae": "NO"
+        }
+      },
+      {
+        "text": "Does infection cause severe muscle aches?",
+        "answers": {
+          "Bacillus anthracis": "NO",
+          "Candida albicans": "NO",
+          "Escherichia coli": "NO",
+          "HIV": "NO",
+          "Influenza A": "YES",
+          "Listeria monocytogenes": "NO",
+          "Measles virus": "NO",
+          "Mycobacterium tuberculosis": "NO",
+          "Neisseria gonorrhoeae": "NO",
+          "Neisseria meningitidis": "NO",
+          "Plasmodium falciparum": "NO",
+          "Pneumocystis jirovecii": "NO",
+          "SARS-CoV-2": "YES",
+          "Salmonella enterica": "NO",
+          "Staphylococcus aureus": "NO",
+          "Vibrio cholerae": "NO"
+        }
+      },
+      {
+        "text": "Can infection cause swollen lymph nodes?",
+        "answers": {
+          "Bacillus anthracis": "YES",
+          "Candida albicans": "NO",
+          "Escherichia coli": "NO",
+          "HIV": "YES",
+          "Influenza A": "NO",
+          "Listeria monocytogenes": "YES",
+          "Measles virus": "NO",
+          "Mycobacterium tuberculosis": "YES",
+          "Neisseria gonorrhoeae": "NO",
+          "Neisseria meningitidis": "NO",
+          "Plasmodium falciparum": "NO",
+          "Pneumocystis jirovecii": "NO",
+          "SARS-CoV-2": "NO",
+          "Salmonella enterica": "NO",
+          "Staphylococcus aureus": "NO",
+          "Vibrio cholerae": "NO"
+        }
+      },
+      {
+        "text": "Can infection cause characteristic white spots inside the mouth?",
+        "answers": {
+          "Bacillus anthracis": "NO",
+          "Candida albicans": "YES",
+          "Escherichia coli": "NO",
+          "HIV": "NO",
+          "Influenza A": "NO",
+          "Listeria monocytogenes": "YES",
+          "Measles virus": "NO",
+          "Mycobacterium tuberculosis": "NO",
+          "Neisseria gonorrhoeae": "NO",
+          "Neisseria meningitidis": "NO",
+          "Plasmodium falciparum": "NO",
+          "Pneumocystis jirovecii": "NO",
+          "SARS-CoV-2": "NO",
+          "Salmonella enterica": "NO",
+          "Staphylococcus aureus": "NO",
+          "Vibrio cholerae": "NO"
+        }
+      },
+      {
+        "text": "Can infection cause painful urination?",
+        "answers": {
+          "Bacillus anthracis": "NO",
+          "Candida albicans": "YES",
+          "Escherichia coli": "NO",
+          "HIV": "NO",
+          "Influenza A": "NO",
+          "Listeria monocytogenes": "NO",
+          "Measles virus": "YES",
+          "Mycobacterium tuberculosis": "NO",
+          "Neisseria gonorrhoeae": "NO",
+          "Neisseria meningitidis": "NO",
+          "Plasmodium falciparum": "NO",
+          "Pneumocystis jirovecii": "NO",
+          "SARS-CoV-2": "NO",
+          "Salmonella enterica": "NO",
+          "Staphylococcus aureus": "NO",
+          "Vibrio cholerae": "NO"
+        }
+      },
+      {
+        "text": "Can infection cause spleen or liver enlargement?",
+        "answers": {
+          "Bacillus anthracis": "NO",
+          "Candida albicans": "NO",
+          "Escherichia coli": "NO",
+          "HIV": "YES",
+          "Influenza A": "NO",
+          "Listeria monocytogenes": "NO",
+          "Measles virus": "NO",
+          "Mycobacterium tuberculosis": "YES",
+          "Neisseria gonorrhoeae": "NO",
+          "Neisseria meningitidis": "NO",
+          "Plasmodium falciparum": "NO",
+          "Pneumocystis jirovecii": "NO",
+          "SARS-CoV-2": "NO",
+          "Salmonella enterica": "NO",
+          "Staphylococcus aureus": "NO",
+          "Vibrio cholerae": "NO"
+        }
+      },
+      {
+        "text": "Can infection cause severe dehydration?",
+        "answers": {
+          "Bacillus anthracis": "NO",
+          "Candida albicans": "NO",
+          "Escherichia coli": "YES",
+          "HIV": "NO",
+          "Influenza A": "NO",
+          "Listeria monocytogenes": "NO",
+          "Measles virus": "NO",
+          "Mycobacterium tuberculosis": "NO",
+          "Neisseria gonorrhoeae": "YES",
+          "Neisseria meningitidis": "NO",
+          "Plasmodium falciparum": "NO",
+          "Pneumocystis jirovecii": "NO",
+          "SARS-CoV-2": "NO",
+          "Salmonella enterica": "YES",
+          "Staphylococcus aureus": "NO",
+          "Vibrio cholerae": "YES"
+        }
+      },
+      {
+        "text": "Can infection cause haemolytic anaemia?",
+        "answers": {
+          "Bacillus anthracis": "NO",
+          "Candida albicans": "NO",
+          "Escherichia coli": "YES",
+          "HIV": "NO",
+          "Influenza A": "NO",
+          "Listeria monocytogenes": "NO",
+          "Measles virus": "NO",
+          "Mycobacterium tuberculosis": "NO",
+          "Neisseria gonorrhoeae": "NO",
+          "Neisseria meningitidis": "NO",
+          "Plasmodium falciparum": "NO",
+          "Pneumocystis jirovecii": "NO",
+          "SARS-CoV-2": "NO",
+          "Salmonella enterica": "NO",
+          "Staphylococcus aureus": "NO",
+          "Vibrio cholerae": "NO"
+        }
+      },
+      {
+        "text": "Can infection cause significant immunodeficiency?",
+        "answers": {
+          "Bacillus anthracis": "NO",
+          "Candida albicans": "NO",
+          "Escherichia coli": "NO",
+          "HIV": "YES",
+          "Influenza A": "NO",
+          "Listeria monocytogenes": "NO",
+          "Measles virus": "NO",
+          "Mycobacterium tuberculosis": "NO",
+          "Neisseria gonorrhoeae": "NO",
+          "Neisseria meningitidis": "NO",
+          "Plasmodium falciparum": "NO",
+          "Pneumocystis jirovecii": "NO",
+          "SARS-CoV-2": "NO",
+          "Salmonella enterica": "NO",
+          "Staphylococcus aureus": "NO",
+          "Vibrio cholerae": "NO"
+        }
+      }
+    ]
+  },
+  {
+    "id": "diagnostic",
+    "title": "Category 4 – Diagnostic methods",
+    "questions": [
+      {
+        "text": "Is bacterial culture a primary laboratory method used to identify this pathogen?",
+        "answers": {
+          "Bacillus anthracis": "YES",
+          "Candida albicans": "NO",
+          "Escherichia coli": "YES",
+          "HIV": "NO",
+          "Influenza A": "NO",
+          "Listeria monocytogenes": "YES",
+          "Measles virus": "NO",
+          "Mycobacterium tuberculosis": "YES",
+          "Neisseria gonorrhoeae": "YES",
+          "Neisseria meningitidis": "YES",
+          "Plasmodium falciparum": "NO",
+          "Pneumocystis jirovecii": "NO",
+          "SARS-CoV-2": "NO",
+          "Salmonella enterica": "YES",
+          "Staphylococcus aureus": "YES",
+          "Vibrio cholerae": "YES"
+        }
+      },
+      {
+        "text": "Is PCR on a respiratory sample routinely used to diagnose this infection?",
+        "answers": {
+          "Bacillus anthracis": "NO",
+          "Candida albicans": "NO",
+          "Escherichia coli": "NO",
+          "HIV": "NO",
+          "Influenza A": "YES",
+          "Listeria monocytogenes": "NO",
+          "Measles virus": "NO",
+          "Mycobacterium tuberculosis": "YES",
+          "Neisseria gonorrhoeae": "NO",
+          "Neisseria meningitidis": "NO",
+          "Plasmodium falciparum": "NO",
+          "Pneumocystis jirovecii": "YES",
+          "SARS-CoV-2": "YES",
+          "Salmonella enterica": "NO",
+          "Staphylococcus aureus": "NO",
+          "Vibrio cholerae": "NO"
+        }
+      },
+      {
+        "text": "Is a molecular test on a stool sample commonly used to diagnose this infection?",
+        "answers": {
+          "Bacillus anthracis": "NO",
+          "Candida albicans": "NO",
+          "Escherichia coli": "YES",
+          "HIV": "NO",
+          "Influenza A": "NO",
+          "Listeria monocytogenes": "NO",
+          "Measles virus": "NO",
+          "Mycobacterium tuberculosis": "NO",
+          "Neisseria gonorrhoeae": "NO",
+          "Neisseria meningitidis": "NO",
+          "Plasmodium falciparum": "NO",
+          "Pneumocystis jirovecii": "NO",
+          "SARS-CoV-2": "NO",
+          "Salmonella enterica": "YES",
+          "Staphylococcus aureus": "NO",
+          "Vibrio cholerae": "YES"
+        }
+      },
+      {
+        "text": "Is an acid-fast stain used to help identify this pathogen?",
+        "answers": {
+          "Bacillus anthracis": "NO",
+          "Candida albicans": "NO",
+          "Escherichia coli": "NO",
+          "HIV": "NO",
+          "Influenza A": "NO",
+          "Listeria monocytogenes": "NO",
+          "Measles virus": "NO",
+          "Mycobacterium tuberculosis": "YES",
+          "Neisseria gonorrhoeae": "NO",
+          "Neisseria meningitidis": "NO",
+          "Plasmodium falciparum": "NO",
+          "Pneumocystis jirovecii": "NO",
+          "SARS-CoV-2": "NO",
+          "Salmonella enterica": "NO",
+          "Staphylococcus aureus": "NO",
+          "Vibrio cholerae": "NO"
+        }
+      },
+      {
+        "text": "Is this pathogen routinely identified using Gram staining?",
+        "answers": {
+          "Bacillus anthracis": "YES",
+          "Candida albicans": "NO",
+          "Escherichia coli": "YES",
+          "HIV": "NO",
+          "Influenza A": "NO",
+          "Listeria monocytogenes": "YES",
+          "Measles virus": "NO",
+          "Mycobacterium tuberculosis": "NO",
+          "Neisseria gonorrhoeae": "YES",
+          "Neisseria meningitidis": "YES",
+          "Plasmodium falciparum": "NO",
+          "Pneumocystis jirovecii": "NO",
+          "SARS-CoV-2": "NO",
+          "Salmonella enterica": "YES",
+          "Staphylococcus aureus": "YES",
+          "Vibrio cholerae": "YES"
+        }
+      },
+      {
+        "text": "Can a rapid antigen test on a respiratory sample be used to help diagnose this infection?",
+        "answers": {
+          "Bacillus anthracis": "NO",
+          "Candida albicans": "NO",
+          "Escherichia coli": "NO",
+          "HIV": "NO",
+          "Influenza A": "YES",
+          "Listeria monocytogenes": "NO",
+          "Measles virus": "NO",
+          "Mycobacterium tuberculosis": "NO",
+          "Neisseria gonorrhoeae": "NO",
+          "Neisseria meningitidis": "NO",
+          "Plasmodium falciparum": "NO",
+          "Pneumocystis jirovecii": "NO",
+          "SARS-CoV-2": "YES",
+          "Salmonella enterica": "NO",
+          "Staphylococcus aureus": "NO",
+          "Vibrio cholerae": "NO"
+        }
+      },
+      {
+        "text": "Is serology testing routinely used to help diagnose this infection?",
+        "answers": {
+          "Bacillus anthracis": "NO",
+          "Candida albicans": "NO",
+          "Escherichia coli": "NO",
+          "HIV": "YES",
+          "Influenza A": "NO",
+          "Listeria monocytogenes": "NO",
+          "Measles virus": "YES",
+          "Mycobacterium tuberculosis": "NO",
+          "Neisseria gonorrhoeae": "NO",
+          "Neisseria meningitidis": "NO",
+          "Plasmodium falciparum": "NO",
+          "Pneumocystis jirovecii": "NO",
+          "SARS-CoV-2": "NO",
+          "Salmonella enterica": "NO",
+          "Staphylococcus aureus": "NO",
+          "Vibrio cholerae": "NO"
+        }
+      },
+      {
+        "text": "Is this pathogen routinely grown on selective or differential culture media to help identify it?",
+        "answers": {
+          "Bacillus anthracis": "NO",
+          "Candida albicans": "YES",
+          "Escherichia coli": "YES",
+          "HIV": "NO",
+          "Influenza A": "NO",
+          "Listeria monocytogenes": "YES",
+          "Measles virus": "NO",
+          "Mycobacterium tuberculosis": "YES",
+          "Neisseria gonorrhoeae": "YES",
+          "Neisseria meningitidis": "YES",
+          "Plasmodium falciparum": "NO",
+          "Pneumocystis jirovecii": "NO",
+          "SARS-CoV-2": "NO",
+          "Salmonella enterica": "YES",
+          "Staphylococcus aureus": "YES",
+          "Vibrio cholerae": "YES"
+        }
+      }
+    ]
+  }
 ];
-
 
 // STORE THE CURRENT CASE AND QUESTION COUNT
 
@@ -1151,22 +2009,72 @@ function RestoreAllCards() {
 }
 
 
-// ASK A YES/NO/N/A QUESTION
+// POPULATE THE CATEGORY MENU
+function buildCategoryMenu() {
+  const menu = document.getElementById("CategorySelect");
 
+  questionCategories.forEach(function(category) {
+    const option = document.createElement("option");
+    option.value = category.id;
+    option.textContent = category.title;
+    menu.appendChild(option);
+  });
+}
+
+// UPDATE THE QUESTION MENU WHEN A CATEGORY IS CHOSEN
+function populateQuestionMenu() {
+  const categoryId = document.getElementById("CategorySelect").value;
+  const questionMenu = document.getElementById("QuestionSelect");
+
+  questionMenu.innerHTML = '<option value="">Choose a question...</option>';
+
+  const category = questionCategories.find(function(item) {
+    return item.id === categoryId;
+  });
+
+  if (!category) {
+    questionMenu.disabled = true;
+    questionMenu.innerHTML = '<option value="">Choose a category first...</option>';
+    return;
+  }
+
+  category.questions.forEach(function(question, index) {
+    const option = document.createElement("option");
+    option.value = String(index);
+    option.textContent = question.text;
+    questionMenu.appendChild(option);
+  });
+
+  questionMenu.disabled = false;
+}
+
+// ASK A YES/NO QUESTION
 function AskQuestion() {
-
   if (!currentCase) return;
 
-  const selectedText = document.getElementById("QuestionSelect").value;
+  const categoryId = document.getElementById("CategorySelect").value;
+  const selectedQuestion = document.getElementById("QuestionSelect").value;
 
-  if (selectedText === "") {
+  if (categoryId === "") {
+    alert("Please choose a question category first.");
+    return;
+  }
+
+  if (selectedQuestion === "") {
     alert("Please choose a question first.");
     return;
   }
 
-  const question = questions.find(function(item) {
-    return item.text === selectedText;
+  const category = questionCategories.find(function(item) {
+    return item.id === categoryId;
   });
+
+  if (!category) {
+    alert("Question category not found. Please try again.");
+    return;
+  }
+
+  const question = category.questions[Number(selectedQuestion)];
 
   if (!question) {
     alert("Question not found. Please try again.");
@@ -1178,69 +2086,14 @@ function AskQuestion() {
       ? "Escherichia coli"
       : currentCase.answer;
 
-  const hiddenPathogen = pathogens.find(function(item) {
-    return item.name === answerName;
-  });
+  const answer = question.answers[answerName];
 
-  if (!hiddenPathogen) {
+  if (answer !== "YES" && answer !== "NO") {
     document.getElementById("QuestionAnswer").textContent =
-      "This question is not available for the selected case yet.";
-
+      "An answer is not available for this question and pathogen.";
     document.getElementById("QuestionAnswer").hidden = false;
     return;
   }
-
-  const traitValue = hiddenPathogen.traits[question.trait];
-
-  let answer;
-
-  if (traitValue === true || traitValue === "yes") {
-    answer = "YES";
-  } else if (traitValue === false || traitValue === "no") {
-    answer = "NO";
-  } else if (traitValue === "na") {
-    answer = "N/A";
-  } else {
-    answer = "N/A";
-  }
-
-  questionsAsked += 1;
-  score = Math.max(0, score - 5);
-
-  let answerMessage = "Answer: " + answer + ".";
-
-  if (answer === "N/A") {
-    answerMessage += " This question does not apply or cannot be answered reliably for this pathogen.";
-  }
-
-  document.getElementById("QuestionAnswer").textContent =
-    answerMessage;
-
-  document.getElementById("QuestionAnswer").hidden = false;
-
-  document.getElementById("QuestionCount").textContent =
-    "Questions asked: " + questionsAsked + " | Score: " + score + " points";
-
-}
-
-  const answerName =
-    currentCase.answer === "Escherichia coli (STEC)"
-      ? "Escherichia coli"
-      : currentCase.answer;
-
-  const hiddenPathogen = pathogens.find(function(item) {
-    return item.name === answerName;
-  });
-
-  if (!hiddenPathogen) {
-    document.getElementById("QuestionAnswer").textContent =
-      "This question is not available for the selected case yet.";
-
-    document.getElementById("QuestionAnswer").hidden = false;
-    return;
-  }
-
-  const answer = hiddenPathogen.traits[question.trait] ? "YES" : "NO";
 
   questionsAsked += 1;
   score = Math.max(0, score - 5);
@@ -1252,7 +2105,6 @@ function AskQuestion() {
 
   document.getElementById("QuestionCount").textContent =
     "Questions asked: " + questionsAsked + " | Score: " + score + " points";
-
 }
 
 
@@ -1359,18 +2211,8 @@ function escapeHTML(value) {
 }
 
 
-// ADD QUESTIONS TO THE QUESTION MENU
-
-questions.forEach(function(question) {
-
-  const option = document.createElement("option");
-
-  option.value = question.text;
-  option.textContent = question.text;
-
-  document.getElementById("QuestionSelect").appendChild(option);
-
-});
+// ADD THE FOUR CATEGORIES TO THE CATEGORY MENU
+buildCategoryMenu();
 
 
 // ADD PATHOGENS TO THE DIAGNOSIS MENU
