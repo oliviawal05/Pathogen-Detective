@@ -340,8 +340,7 @@ select {
   <button class="secondary" onclick="BackToWelcome()">
     Back to Welcome Screen
   </button>
-<button class="secondary: onclick="BackToWelcome()"
-  End Game
+
 </div>
 
 <!-- GAME SCREEN -->
@@ -469,67 +468,8 @@ select {
 >
   Choose Another Case
 </button>
-  <button
-    class="secondary"
-    onclick-"EndGame()"
-    >
-  End Game
-  </button>
 </div>
 
-  <!-- FINAL GAME RESULTS SCREEN -->
-
-<div class="panel" id="EndGameScreen" hidden>
-
-  <h2>🏆 Investigation Complete! 🏆</h2>
-
-  <p>Well done, Detective! Here are your final results.</p>
-
-  <h3 id="FinalTotalScore">Total Score: 0 points</h3>
-
-  <p id="CasesCompleted">
-    Cases completed: 0 out of 5
-  </p>
-
-  <p id="MaximumPossibleScore">
-    Maximum possible score: 0 points
-  </p>
-
-  <p id="FinalAverageScore">
-    Average score: 0 points
-  </p>
-
-  <div class="case-section">
-
-    <h3>Share Your Feedback</h3>
-
-    <p>
-      Please complete our survey to share your experience
-      of playing Pathogen Detective.
-    </p>
-
-    <a
-      id="SurveyLink"
-      href="#"
-      target="_blank"
-      rel="noopener noreferrer"
-      hidden
-    >
-      <button class="primary" type="button">
-        Complete the Survey
-      </button>
-    </a>
-
-  </div>
-
-  <button
-    class="secondary"
-    onclick="location.reload()"
-  >
-    Play Again
-  </button>
-
-</div>
 <script>
 
 // FIVE CLINICAL CASES
@@ -2298,6 +2238,8 @@ buildCaseSelection();
 
 </body>
 </html>
+
+
 
 
 
