@@ -322,7 +322,7 @@ select {
   </p>
 </div>
 
-  <button class="primary" onclick="StartGame()">Start Game</button>
+  <button class="primary" id="StartGameButton" type="button">Start Game</button>
 </div>
 
   <!-- CASE SELECTION SCREEN -->
@@ -2211,6 +2211,9 @@ function escapeHTML(value) {
 }
 
 
+// CONNECT THE START BUTTON DIRECTLY TO THE START FUNCTION
+document.getElementById("StartGameButton").addEventListener("click", StartGame);
+
 // ADD THE FOUR CATEGORIES TO THE CATEGORY MENU
 buildCategoryMenu();
 
@@ -2235,4 +2238,6 @@ buildCaseSelection();
 
 </body>
 </html>
+
+
 
