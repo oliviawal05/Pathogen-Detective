@@ -302,13 +302,13 @@ select {
 
   <p>
     🧩 This is a deduction game, not a test of whether a pathogen
-    could ever display a particular characteristic in every
+    could <strong>ever</strong> display a particular characteristic in every
     possible circumstance.
   </p>
 
   <p>
     🦠 Answers are based on the typical characteristics of each
-    pathogen. Some characteristics can vary between strains,
+    pathogen. Some characteristics will vary between strains,
     clinical circumstances or patients.
   </p>
 
@@ -356,8 +356,12 @@ select {
   <div class="case-section">
     <h3>Patient Background</h3>
     <p id="CaseBackground"></p>
-  </div>
+</div>
 
+<div class="case-section" id="CaseAdditionalInformation" hidden>
+    <h3>🩺 Clinical Update</h3>
+    <p id="CaseAdditionalInformationText"></p>
+</div>
   <div class="case-section">
     <h3>Symptoms and Clinical Findings</h3>
     <ul id="CaseSymptoms"></ul>
@@ -516,7 +520,7 @@ const cases = [
     title: "The Farmer's Skin Lesion Mystery",
 
     background:
-      "A 28-year-old male farmer attends the emergency department with a skin lesion on his right forearm that has progressively worsened over five days. It initially appeared as a small itchy bump before developing into a fluid-filled blister. This eventually ruptured and formed a painless ulcer with a dark central area. He regularly handles animal hides and wool as part of his occupation. Several animals on a nearby farm have recently become unwell.",
+      "A 28-year-old male farmer attends the emergency department for a skin lesion on his right forearm that has progressively worsened over five days. It initially appeared as a small itchy bump before developing into a fluid-filled blister. This eventually ruptured and formed a painless ulcer with a dark central area. He regularly handles animal skins and wool as part of his occupation. Several animals on a nearby farm have recently become unwell.",
 
     symptoms: [
       "An itchy skin bump that developed into a blister",
@@ -525,9 +529,11 @@ const cases = [
       "Mild fever",
       "Body aches",
       "General fatigue",
-      "Swollen regional lymph nodes"
+      "Swollen lymph nodes"
     ],
-
+    additionalInformation:
+  "The triage nurse reffers him for blood panels to begin a full clinical assessment.",
+    
     labs: [
       "White blood cell count: 13.2 × 10⁹/L",
       "Neutrophils: 10.1 × 10⁹/L",
@@ -683,18 +689,24 @@ function SelectCase(index) {
   document.getElementById("GameScreen").hidden = false;
 
   // Display the selected case
-  document.getElementById("CaseNumber").textContent =
-    "CASE FILE " + (index + 1) + " OF " + cases.length;
+document.getElementById("CaseNumber").textContent =
+  "CASE FILE " + (index + 1) + " OF " + cases.length;
 
-  document.getElementById("CaseTitle").textContent =
-    currentCase.title;
+document.getElementById("CaseTitle").textContent =
+  currentCase.title;
 
-  document.getElementById("CaseBackground").textContent =
-    currentCase.background;
+document.getElementById("CaseBackground").textContent =
+  currentCase.background;
 
-  fillList("CaseSymptoms", currentCase.symptoms);
-  fillList("CaseLabs", currentCase.labs);
+// Display Clinical Update if one exists
+document.getElementById("CaseAdditionalInformation").textContent =
+  currentCase.additionalInformation || "";
 
+document.getElementById("CaseAdditionalInformation").hidden =
+  !currentCase.additionalInformation;
+
+fillList("CaseSymptoms", currentCase.symptoms);
+fillList("CaseLabs", currentCase.labs);
   // Reset the investigation
   document.getElementById("QuestionCount").textContent =
     "Questions asked: 0 | Score: 100 points";
