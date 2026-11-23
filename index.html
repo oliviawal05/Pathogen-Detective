@@ -2193,10 +2193,10 @@ function buildBoard() {
       card.insertBefore(warning, card.firstChild);
     };
 
-    const name = document.createElement("span");
-    name.className = "pathogen-name";
-    name.textContent = pathogen.name;
-
+   const name = document.createElement("span");
+name.className = "pathogen-name";
+name.innerHTML = formatScientificNames(pathogen.name);
+    
     card.appendChild(img);
     card.appendChild(name);
 
