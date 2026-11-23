@@ -2414,29 +2414,67 @@ function SubmitDiagnosis() {
 
 // DISPLAY THE TEACHING EXPLANATION ONLY AFTER DIAGNOSIS SUBMISSION
 
+function formatScientificNames(text) {
+
+  let formatted = escapeHTML(text);
+
+  const namesToItalicise = [
+    "Bacillus anthracis",
+    "Staphylococcus aureus",
+    "Neisseria meningitidis",
+    "Mycobacterium tuberculosis",
+    "Escherichia coli",
+    "Streptococcus pneumoniae",
+    "Clostridium difficile",
+    "Clostridioides difficile",
+    "Pseudomonas aeruginosa",
+    "Klebsiella pneumoniae",
+    "Salmonella enterica",
+    "Vibrio cholerae",
+    "Haemophilus influenzae",
+    "Streptococcus pyogenes",
+    "SARS-CoV-2",
+    "mecA",
+    "mecC"
+  ];
+
+  namesToItalicise.forEach(function(name) {
+    const escapedName = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const regex = new RegExp("\\b" + escapedName + "\\b", "g");
+
+    formatted = formatted.replace(
+      regex,
+      "<em>" + name + "</em>"
+    );
+  });
+
+  return formatted;
+}
+
+
 function displayCaseExplanation() {
 
   const explanation = caseExplanations[currentCase.answer];
 
   if (!explanation) return;
 
-  document.getElementById("ExplanationDisease").textContent =
-    explanation.disease;
+  document.getElementById("ExplanationDisease").innerHTML =
+    formatScientificNames(explanation.disease);
 
-  document.getElementById("ExplanationWhy").textContent =
-    explanation.why;
+  document.getElementById("ExplanationWhy").innerHTML =
+    formatScientificNames(explanation.why);
 
-  document.getElementById("ExplanationMicrobiology").textContent =
-    explanation.microbiology;
+  document.getElementById("ExplanationMicrobiology").innerHTML =
+    formatScientificNames(explanation.microbiology);
 
-  document.getElementById("ExplanationLaboratory").textContent =
-    explanation.laboratory;
+  document.getElementById("ExplanationLaboratory").innerHTML =
+    formatScientificNames(explanation.laboratory);
 
-  document.getElementById("ExplanationPathogenesis").textContent =
-    explanation.pathogenesis;
+  document.getElementById("ExplanationPathogenesis").innerHTML =
+    formatScientificNames(explanation.pathogenesis);
 
-  document.getElementById("ExplanationSignificance").textContent =
-    explanation.significance;
+  document.getElementById("ExplanationSignificance").innerHTML =
+    formatScientificNames(explanation.significance);
 
   document.getElementById("CaseExplanation").hidden = false;
 }
