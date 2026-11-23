@@ -542,7 +542,7 @@ select {
     <div class="case-section">
         <h3>Share Your Feedback</h3>
         <p>Please complete our survey to share your experience of playing Pathogen Detective.</p>
-        <a id="SurveyLink" href="#" target="_blank" rel="noopener noreferrer" hidden>
+        <a id="SurveyButton" href="#" target="_blank" rel="noopener noreferrer" hidden>
             <button class="primary" type="button">Complete the Survey</button>
         </a>
     </div>
@@ -2546,11 +2546,15 @@ function EndGame() {
   document.getElementById("FinalAverageScore").textContent =
     "Average score: " + averageScore + " points";
 
-  if (surveyURL !== "") {
-    const surveyLink = document.getElementById("SurveyLink");
-    surveyLink.href = surveyURL;
-    surveyLink.hidden = false;
-  }
+ if (surveyURL !== "") {
+  const surveyButton = document.getElementById("SurveyButton");
+
+  surveyButton.onclick = function() {
+    window.open(surveyURL, "_blank", "noopener,noreferrer");
+  };
+
+  surveyButton.hidden = false;
+}
 }
 </script>
 
