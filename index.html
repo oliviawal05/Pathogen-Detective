@@ -347,7 +347,7 @@ select {
   </div>
 
   <div class="deduction-note">
-    <h3>🏆 How Scoring Works</h3>
+    <h3>🏆 How Scoring Works 🏆</h3>
 
     <p>⭐ Each clinical case starts with <strong>100 points</strong>.</p>
 
@@ -563,29 +563,28 @@ const cases = [
 
   {
     answer: "Bacillus anthracis",
-    title: "The Farmer's Skin Lesion Mystery",
+    title: "The Skin Lesion Mystery",
 
     background:
-      "Steven, a 38-year-old male farmer attends the emergency department for a skin lesion on his right forearm that has progressively worsened over five days. It initially appeared as a small itchy bump before developing into a fluid-filled blister. This eventually ruptured and formed a painless ulcer with a dark central area. He regularly handles animal skins and wool as part of his occupation. Several animals on a nearby farm have recently become unwell.",
+      "Steven, a 38-year-old male farmer attends the emergency department for a skin lesion on his right forearm that has progressively worsened from a small itchy bump over five days. This eventually ruptured and formed a painless ulcer with a dark central area. He explains he workd outdoors and regularly handles animal skins and wool as part of his occupation. Several of his animals have recently become unwell.",
 
     symptoms: [
       "An itchy skin bump that developed into a blister",
-      "A painless ulcer with a dark central area",
+      "A painless mark with a dark central area",
       "Swelling of the surrounding skin",
       "Mild fever",
       "Body aches",
       "General fatigue",
       "Swollen lymph nodes"
     ],
-    additionalInformation:
-  "The triage nurse refers him for blood panels to begin a full clinical assessment.",
-    
+   
     labs: [
       "White blood cell count: 13.2 × 10⁹/L",
       "Neutrophils: 10.1 × 10⁹/L",
       "Haemoglobin: 145 g/L",
       "Platelets: 280 × 10⁹/L",
       "Creatinine: 86 µmol/L"
+      "A swab is collected from the skin lesion for microbiological investigation"
     ]
   },
 
@@ -870,16 +869,16 @@ const caseExplanations = {
       "The key combination is a skin lesion that progresses from an itchy bump to a blister and then a typically painless ulcer with a dark central eschar, together with occupational exposure to animal hides and wool. This pattern is strongly suggestive of cutaneous anthrax. The raised white blood cell and neutrophil counts indicate inflammation but further investigation was required to identify the organism.",
 
     microbiology:
-      "Bacillus anthracis is a large Gram-positive, rod-shaped bacterium that forms highly resistant endospores that can lie dormant in soil. It has a distinctive poly-D-glutamic acid capsule, which helps it evade phagocytosis. Its toxins are made from three components: protective antigen, edema factor and lethal factor, all contributing to its virulence.",
+      "Bacillus anthracis is a large Gram-positive, rod-shaped bacterium that forms highly resistant endospores that can lie dormant in soil. It has a poly-D-glutamic acid capsule, which helps it evade the phagocytosis response. Its toxins are made from three components: protective antigen, edema factor and lethal factor, all contributing to its virulence.",
 
     laboratory:
-      "Diagnosis is urgent and should involve specialist clinical microbiology and public-health laboratories. Appropriate samples may be examined using microscopy, culture and molecular methods. The routine blood-count results in this case do not confirm anthrax. Suspected anthrax should be discussed promptly with the relevant infection control and public-health authorities.",
+      "Diagnosis is crucial and should involve specialist clinical microbiology and laboratories. Appropriate samples may be examined using microscopy, culture and molecular methods. The routine blood-count results in this case do not confirm anthrax. Suspected anthrax should be discussed promptly with the relevant infection control and public-health authorities.",
 
     pathogenesis:
-      "Spores can enter through a break in the skin when a person handles contaminated animal products. They germinate and multiply in tissue to produce toxins. Edema factor contributes to oedema, while lethal factor disrupts cell signalling which can cause tissue injury and systemic illness. Local tissue damage produces the characteristic dark eschar.",
+      "The spores can enter through a break in the skin when people handle contaminated animal products. They germinate and multiply in tissue to produce toxins. Edema factor contributes to the swelling, while lethal factor disrupts cell signalling which can cause tissue injury and contributes to systemic illness. Local tissue damage produces the characteristic dark eschar.",
 
     significance:
-      "Cutaneous anthrax is treatable, but prompt medical assessment and appropriate antibiotics are important because if left untreated, infection can progress to systemic disease. The choice and route of treatment depend on severity and whether there are signs of systemic disease; specialist advice is essential. Prevention includes safe handling of animal products, control of infection in livestock and vaccination for eligible high-risk groups. The foodborne trait on the suspect board refers to another possible route of anthrax exposure; this patient's described presentation is cutaneous."
+      "Cutaneous anthrax is treatable, but prompt medical assessment and appropriate antibiotics are important because if left untreated, infection can be fatal. The choice and route of treatment depend on severity and whether there are already signs of systemic disease. Prevention includes safe handling of animal products, control of infection in livestock and vaccination for eligible high-risk groups, including those in many agricultural occupations."
   },
 
   "Escherichia coli (STEC)": {
@@ -1055,7 +1054,7 @@ const pathogens = [
       vector: false,
       redCell: false,
       respiratory: false,
-      foodborne: true
+      foodborne: false
     }
   },
 
@@ -1407,7 +1406,7 @@ const questionCategories = [
         "answers": {
           "Bacillus anthracis": "NO",
           "Candida albicans": "YES",
-          "Escherichia coli": "NO",
+          "Escherichia coli": "YES",
           "HIV": "NO",
           "Influenza A": "NO",
           "Listeria monocytogenes": "NO",
@@ -1740,7 +1739,7 @@ const questionCategories = [
           "Listeria monocytogenes": "NO",
           "Measles virus": "NO",
           "Mycobacterium tuberculosis": "NO",
-          "Neisseria gonorrhoeae": "YES",
+          "Neisseria gonorrhoeae": "NO",
           "Neisseria meningitidis": "NO",
           "Plasmodium falciparum": "NO",
           "Pneumocystis jirovecii": "NO",
@@ -1822,7 +1821,7 @@ const questionCategories = [
           "HIV": "NO",
           "Influenza A": "NO",
           "Listeria monocytogenes": "NO",
-          "Measles virus": "YES",
+          "Measles virus": "NO",
           "Mycobacterium tuberculosis": "NO",
           "Neisseria gonorrhoeae": "NO",
           "Neisseria meningitidis": "NO",
@@ -1866,7 +1865,7 @@ const questionCategories = [
           "Listeria monocytogenes": "NO",
           "Measles virus": "NO",
           "Mycobacterium tuberculosis": "NO",
-          "Neisseria gonorrhoeae": "YES",
+          "Neisseria gonorrhoeae": "NO",
           "Neisseria meningitidis": "NO",
           "Plasmodium falciparum": "NO",
           "Pneumocystis jirovecii": "NO",
